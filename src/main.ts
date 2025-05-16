@@ -9,6 +9,7 @@ import { routes } from './app/app.routes';
 import { provideStore } from '@ngrx/store';
 import { AuthEffects } from './app/auth/auth.effects';
 import { provideEffects } from '@ngrx/effects';
+import { authReducer } from './app/auth/auth.reducer';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -16,7 +17,7 @@ bootstrapApplication(AppComponent, {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideRouter(routes),
-    provideStore(),
+    provideStore({ auth: authReducer }),
     provideEffects([AuthEffects]),
   ]
 

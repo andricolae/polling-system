@@ -4,8 +4,10 @@ import { logout, logoutSuccess, login, loginSuccess, loginFailure } from './auth
 import { exhaustMap, switchMap, map, catchError, tap } from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { signup } from "./auth.actions";
+import { createUserWithEmailAndPassword } from "@angular/fire/auth";
 
 @Injectable()
 export class AuthEffects {
@@ -26,7 +28,7 @@ export class AuthEffects {
 
             return from(getDoc(userRef)).pipe(
               map(userDoc => {
-                const role = userDoc.data()?.['role'] ?? 'user'; 
+                const role = userDoc.data()?.['role'] ?? 'user';
                 return loginSuccess({
                   user: { uid, email, role }
                 });
@@ -56,6 +58,25 @@ export class AuthEffects {
       })
     ),
     { dispatch: false }
+  );
+
+  signup$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(signup),
+      exhaustMap(({ email, password }) =>
+        from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
+          switchMap(userCredential => {
+            const uid = userCredential.user.uid;
+            const email = userCredential.user.email ?? '';
+            const userRef = doc(this.firestore, `users/${uid}`);
+            return from(setDoc(userRef, { role: 'user', email })).pipe(
+              map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
+            );
+          }),
+          catchError(error => of(loginFailure({ error: error.message })))
+        )
+      )
+    )
   );
 
   logout$ = createEffect(() =>
