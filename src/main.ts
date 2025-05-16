@@ -7,13 +7,15 @@ import{provideAuth, getAuth} from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
+import { provideStore } from '@ngrx/store';
 
 bootstrapApplication(AppComponent,{
   providers:[
-    provideFirebaseApp(()=>initializeApp(environment.firebaseConfig)),
-    provideAuth(()=>getAuth()),
-    provideFirestore(()=>getFirestore()),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
     provideRouter(routes),
-  ]
+    provideStore()
+]
 
 })
