@@ -1,14 +1,15 @@
 <nav id="header" class="fixed top-0 z-30 w-full text-white">
 
-    <div class="container flex flex-wrap items-center justify-between w-full py-2 mx-auto mt-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div
+        class="container flex flex-wrap items-center justify-between w-full py-2 mx-auto mt-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
 
         <div class="flex items-center pl-4">
-            <a class="text-2xl font-bold no-underline toggleColour hover:no-underline lg:text-4xl text-white flex items-center gap-2"
-               routerLink="/">
-              <img src="logo.png" alt="Logo" class="h-8 w-8" />
-              Chime-In
+            <a class=" cursor-pointer text-2xl font-bold no-underline toggleColour hover:no-underline lg:text-4xl text-white flex items-center gap-2"
+                (click)="navigateTo('/home')">
+                <img src="logo.png" alt="Logo" class="h-8 w-8" />
+                Chime-In
             </a>
-          </div>
+        </div>
 
         <div class="block pr-4 lg:hidden">
             <button id="nav-toggle"
@@ -20,20 +21,22 @@
             </button>
         </div>
 
-        <div class="z-20 flex-grow hidden w-full p-4 mt-2 text-black lg:flex lg:items-center lg:w-auto lg:block lg:mt-0 lg:bg-transparent lg:p-0 bg-gray-100"
+        <div class=" cursor-pointer z-20 flex-grow hidden w-full p-4 mt-2 text-black lg:flex lg:items-center lg:w-auto lg:block lg:mt-0 lg:bg-transparent lg:p-0 bg-gray-100"
             id="nav-content">
             <ul class="items-center justify-end flex-1 list-reset lg:flex">
                 <li class="mr-3">
-                    <a (click)="navigateTo('/create')" class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400">
+                    <a (click)="navigateTo('/create')"
+                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400">
                         Create</a>
                 </li>
                 <li class="mr-3">
-                    <a (click)="navigateTo('/')" class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline"
-                        >Home</a>
+                    <a (click)="navigateTo('/')"
+                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">Home</a>
                 </li>
             </ul>
             <button id="navAction"
-                class="px-8 py-4 mx-auto mt-4 font-bold rounded-full shadow opacity-75 lg:mx-0 hover:bg-cyan-400 lg:mt-0 bg-white text-gray-800">Log In</button>
+                class="px-8 py-4 mx-auto mt-4 font-bold rounded-full shadow opacity-75 lg:mx-0 hover:bg-cyan-400 lg:mt-0 bg-white text-gray-800">
+                Log In</button>
         </div>
     </div>
     <hr class="py-0 my-0 border-b border-gray-100 opacity-25">
