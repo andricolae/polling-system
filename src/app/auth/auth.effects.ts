@@ -47,10 +47,10 @@ export class AuthEffects {
       tap(({ user }) => {
         switch (user.role) {
           case 'admin':
-            this.router.navigate(['/admin-dashboard']);
+            this.router.navigate(['/create']);
             break;
           case 'user':
-            this.router.navigate(['/user-dashboard']);
+            this.router.navigate(['/vote']);
             break;
           default:
             this.router.navigate(['/home']);
