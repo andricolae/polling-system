@@ -44,9 +44,21 @@
                         Vote</a>
                 </li>
             </ul>
-            <a (click)="navigateTo('/login')"
+            <!-- <a (click)="navigateTo('/login')"
                 class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
-                Log In</a>
+                Log In</a> -->
+            <ng-container *ngIf="isAuthenticated$ | async; else loginLink">
+                <a (click)="logout()"
+                    class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
+                    Log Out
+                </a>
+            </ng-container>
+            <ng-template #loginLink>
+                <a (click)="navigateTo('/login')"
+                    class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
+                    Log In
+                </a>
+            </ng-template>
         </div>
     </div>
     <hr class="py-0 my-0 border-b border-gray-100 opacity-25">
