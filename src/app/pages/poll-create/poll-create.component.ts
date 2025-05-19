@@ -37,4 +37,10 @@ export class PollCreateComponent {
       this.answerOptions.push('');
     }
   }
+
+  removeOption(index: number) {
+    if (this.answerOptions.length > 2) {
+      this.answerOptions.splice(index, 1);
+    }
+  }
 }
