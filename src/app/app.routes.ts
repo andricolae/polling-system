@@ -8,7 +8,7 @@ import { PollCreateComponent } from './pages/poll-create/poll-create.component';
 import { PollVoteComponent } from './pages/poll-vote/poll-vote.component';
 
 export const routes: Routes = [
-    { path: '', component: ComingSoonComponent },
+    // { path: '', component: ComingSoonComponent },
     { path: 'login', component: AuthComponent },
     { path: 'admin-dashboard', component: AdminDashboardComponent },
     { path: 'user-dashboard', component: UserDashboardComponent },

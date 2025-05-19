@@ -29,6 +29,7 @@ export class AuthComponent {
   }
 
   login() {
+    console.log('Login with', this.email, this.password);
     this.store.dispatch(login({ email: this.email, password: this.password }))
   }
 
