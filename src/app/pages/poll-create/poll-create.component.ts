@@ -29,7 +29,7 @@ export class PollCreateComponent {
     this.users.forEach(user => user['selected'] = this.selectAll);
   }
 
-  answerOptions: string[] = [''];
+  answerOptions: string[] = ['', ''];
   maxOptions = 5;
 
   addOption() {

@@ -1,101 +1,101 @@
 <div class="pt-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white px-2 sm:px-4">
     <div class="max-w-5xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-xl shadow-xl mt-6 mb-8">
-  
-      <!-- Header and Button -->
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold text-cyan-400">Create a New Poll</h1>
-        <button
-          class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 px-4 py-2 rounded-md text-sm font-bold tracking-wide transition duration-300 shadow hover:shadow-lg uppercase">
-          Create Poll
-        </button>
-      </div>
-  
-      <!-- Grid Layout -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  
-        <!-- Column 1 -->
-        <div class="space-y-4">
-  
-          <!-- Poll Title -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Poll Title</label>
-            <input type="text" placeholder="Ex: Survey Feedback"
-              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-          </div>
-  
-          <!-- Description -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Description</label>
-            <textarea placeholder="Short description"
-              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"></textarea>
-          </div>
-  
-          <!-- Main Question -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Main Question</label>
-            <input type="text" placeholder="Ex: What did you think about...?"
-              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-          </div>
-  
-          <!-- Dynamic Answer Options -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Answer Options (max 5)</label>
-            <div class="space-y-2">
-              <div *ngFor="let option of answerOptions; let i = index">
-                <input type="text" [(ngModel)]="answerOptions[i]" placeholder="Option {{ i + 1 }}"
-                  class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-              </div>
-              <button type="button"
-                (click)="addOption()"
-                [disabled]="answerOptions.length >= maxOptions"
-                class="mt-1 inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm">
-                <span class="text-base">+</span> Add Option
-              </button>
-            </div>
-          </div>
+
+        <!-- Header and Button -->
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold text-cyan-400">Create a New Poll</h1>
         </div>
-  
-        <!-- Column 2 -->
-        <div class="space-y-4">
-  
-          <!-- Results Timing -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">When should results be shown?</label>
-            <div class="flex gap-4 text-sm">
-              <label class="inline-flex items-center gap-1">
-                <input type="radio" name="resultTiming" class="accent-cyan-500" />
-                When voting ends
-              </label>
-              <label class="inline-flex items-center gap-1">
-                <input type="radio" name="resultTiming" class="accent-cyan-500" />
-                After user votes
-              </label>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Column 1 -->
+            <div class="space-y-4">
+
+                <!-- Poll Title -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Poll Title</label>
+                    <input type="text" placeholder="Ex: Survey Feedback"
+                        class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                </div>
+
+                <!-- Main Question -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1"> Question</label>
+                    <input type="text" placeholder="Ex: What did you think about...?"
+                        class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Description</label>
+                    <input placeholder="Short description"
+                        class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                </div>
+
+                <!-- Dynamic Answer Options -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Answer Options (max 5)</label>
+                    <div class="space-y-2">
+                        <div *ngFor="let option of answerOptions; let i = index">
+                            <input type="text" [(ngModel)]="answerOptions[i]" placeholder="Option {{ i + 1 }}"
+                                class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                        </div>
+                        <button type="button" (click)="addOption()" [disabled]="answerOptions.length >= maxOptions"
+                            class="mt-1 inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm">
+                            <span class="text-base">+</span> Add Option
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
-  
-          <!-- Deadline -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Deadline</label>
-            <input type="datetime-local"
-              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-          </div>
-  
-          <!-- Voter Selection -->
-          <div>
-            <label class="block text-xs font-semibold mb-1">Select who can vote</label>
-            <div class="flex items-center mb-2 text-sm">
-              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()" class="accent-cyan-500 mr-2" />
-              <label>Select All</label>
+
+            <!-- Column 2 -->
+            <div class="space-y-4">
+
+                <!-- Results Timing -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">When should results be shown?</label>
+                    <div class="flex gap-4 text-sm">
+                        <label class="inline-flex items-center gap-1">
+                            <input type="radio" name="resultTiming" class="accent-cyan-500" />
+                            When voting ends
+                        </label>
+                        <label class="inline-flex items-center gap-1">
+                            <input type="radio" name="resultTiming" class="accent-cyan-500" />
+                            After user votes
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Deadline -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Deadline</label>
+                    <input type="datetime-local"
+                        class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+                </div>
+
+                <!-- Voter Selection -->
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Select who can vote</label>
+                    <div class="flex items-center mb-2 text-sm">
+                        <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()"
+                            class="accent-cyan-500 mr-2" />
+                        <label>Select All</label>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto pr-1 text-xs">
+                        <label *ngFor="let user of users" class="inline-flex items-center gap-2">
+                            <input type="checkbox" [(ngModel)]="user.selected" class="accent-cyan-500" />
+                            {{ user.name }} ({{ user.email }})
+                        </label>
+                    </div>
+                </div>
+
+                <button
+                    class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 px-4 py-2 rounded-md text-sm font-bold tracking-wide transition duration-300 shadow hover:shadow-lg uppercase">
+                    Create Poll
+                </button>
+
             </div>
-            <div class="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto pr-1 text-xs">
-              <label *ngFor="let user of users" class="inline-flex items-center gap-2">
-                <input type="checkbox" [(ngModel)]="user.selected" class="accent-cyan-500" />
-                {{ user.name }} ({{ user.email }})
-              </label>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  
+</div>
