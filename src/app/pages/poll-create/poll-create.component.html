@@ -1,96 +1,101 @@
-<div class="pt-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 ">
-    <div
-        class=" min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white flex justify-center items-center p-6">
-
-        <div class="w-full max-w-3xl bg-gray-800 p-8 rounded-xl shadow-2xl space-y-6">
-
-            <h1 class="text-3xl font-bold text-cyan-400">Create a new Poll</h1>
-
-            <!-- titlu -->
-            <div>
-                <label class="block text-sm mb-1">Poll Title</label>
-                <input type="text" placeholder="Ex: Survey feedback"
-                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+<div class="pt-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 min-h-screen text-white px-2 sm:px-4">
+    <div class="max-w-5xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-xl shadow-xl mt-6 mb-8">
+  
+      <!-- Header and Button -->
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-cyan-400">Create a New Poll</h1>
+        <button
+          class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-md text-sm font-semibold tracking-wide transition duration-300 shadow hover:shadow-lg uppercase">
+          Create Poll
+        </button>
+      </div>
+  
+      <!-- Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  
+        <!-- Column 1 -->
+        <div class="space-y-4">
+  
+          <!-- Poll Title -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Poll Title</label>
+            <input type="text" placeholder="Ex: Survey Feedback"
+              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+  
+          <!-- Description -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Description</label>
+            <textarea placeholder="Short description"
+              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"></textarea>
+          </div>
+  
+          <!-- Main Question -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Main Question</label>
+            <input type="text" placeholder="Ex: What did you think about...?"
+              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+  
+          <!-- Dynamic Answer Options -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Answer Options (max 5)</label>
+            <div class="space-y-2">
+              <div *ngFor="let option of answerOptions; let i = index">
+                <input type="text" [(ngModel)]="answerOptions[i]" placeholder="Option {{ i + 1 }}"
+                  class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              </div>
+              <button type="button"
+                (click)="addOption()"
+                [disabled]="answerOptions.length >= maxOptions"
+                class="mt-1 inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 text-sm">
+                <span class="text-base">+</span> Add Option
+              </button>
             </div>
-
-            <!-- descriere -->
-            <div>
-                <label class="block text-sm mb-1">Description</label>
-                <textarea placeholder="Short description"
-                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            </textarea>
-            </div>
-
-            <!-- intrebare -->
-            <div>
-                <label class="block text-sm mb-1">Main Question</label>
-                <input type="text" placeholder="Ex: What did you think about...?"
-                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-            </div>
-
-            <!-- variante de raspuns -->
-            <div>
-                <label class="block text-sm mb-2">Answer Options (max 5)</label>
-                <div class="space-y-2">
-                    <input type="text" placeholder="Option 1"
-                        class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-                    <input type="text" placeholder="Option 2"
-                        class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-                    <input type="text" placeholder="Option 3"
-                        class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-                    <input type="text" placeholder="Option 4"
-                        class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-                    <input type="text" placeholder="Option 5"
-                        class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-                </div>
-            </div>
-
-            <!-- afisare rezultate -->
-            <div>
-                <label class="block text-sm mb-2">When do you want results displayed?</label>
-                <div class="flex gap-6">
-                    <label class="inline-flex items-center gap-2">
-                        <input type="radio" name="resultTiming" class="accent-cyan-500" /> When voting ends
-                    </label>
-                    <label class="inline-flex items-center gap-2">
-                        <input type="radio" name="resultTiming" class="accent-cyan-500" /> After user voted
-                    </label>
-                </div>
-            </div>
-
-            <!-- deadline -->
-            <div>
-                <label class="block text-sm mb-1">Deadline</label>
-                <input type="datetime-local"
-                    class="w-full p-3 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" />
-            </div>
-
-            <!-- select useri -->
-            <div>
-                <label class="block text-sm mb-2">Choose who can vote:</label>
-
-                <div class="flex items-center mb-2">
-                    <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()"
-                        class="accent-cyan-500 mr-2" />
-                    <label>Choose all</label>
-                </div>
-
-                <!-- Lista utilizatori -->
-                <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1">
-                    <label *ngFor="let user of users" class="inline-flex items-center gap-2">
-                        <input type="checkbox" [(ngModel)]="user.selected" class="accent-cyan-500" />
-                        {{ user.name }} ({{ user.email }})
-                    </label>
-                </div>
-
-            </div>
-
-            <div class="text-right pt-4">
-                <button
-                    class="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded font-semibold transition duration-200 shadow">
-                    Create Poll
-                </button>
-            </div>
+          </div>
         </div>
+  
+        <!-- Column 2 -->
+        <div class="space-y-4">
+  
+          <!-- Results Timing -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">When should results be shown?</label>
+            <div class="flex gap-4 text-sm">
+              <label class="inline-flex items-center gap-1">
+                <input type="radio" name="resultTiming" class="accent-cyan-500" />
+                When voting ends
+              </label>
+              <label class="inline-flex items-center gap-1">
+                <input type="radio" name="resultTiming" class="accent-cyan-500" />
+                After user votes
+              </label>
+            </div>
+          </div>
+  
+          <!-- Deadline -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Deadline</label>
+            <input type="datetime-local"
+              class="w-full p-2 rounded-md bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          </div>
+  
+          <!-- Voter Selection -->
+          <div>
+            <label class="block text-xs font-semibold mb-1">Select who can vote</label>
+            <div class="flex items-center mb-2 text-sm">
+              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()" class="accent-cyan-500 mr-2" />
+              <label>Select All</label>
+            </div>
+            <div class="grid grid-cols-2 gap-1 max-h-32 overflow-y-auto pr-1 text-xs">
+              <label *ngFor="let user of users" class="inline-flex items-center gap-2">
+                <input type="checkbox" [(ngModel)]="user.selected" class="accent-cyan-500" />
+                {{ user.name }} ({{ user.email }})
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+  

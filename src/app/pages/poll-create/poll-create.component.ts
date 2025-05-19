@@ -28,4 +28,13 @@ export class PollCreateComponent {
   toggleAll() {
     this.users.forEach(user => user['selected'] = this.selectAll);
   }
+
+  answerOptions: string[] = [''];
+  maxOptions = 5;
+
+  addOption() {
+    if (this.answerOptions.length < this.maxOptions) {
+      this.answerOptions.push('');
+    }
+  }
 }

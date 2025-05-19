@@ -8,7 +8,7 @@
                 <li *ngFor="let poll of ongoingPolls" (click)="openPoll(poll)"
                     class="bg-gray-900 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-800">
                     {{ poll.title }}
-                    <span class="block text-sm text-gray-400">Open until:  {{ poll.deadline | date:'shortDate' }}</span>
+                    <span class="block text-sm text-gray-400">Open until: {{ poll.deadline | date:'shortDate' }}</span>
                 </li>
             </ul>
         </div>
@@ -17,15 +17,14 @@
         <div>
             <h2 class="text-xl font-bold mb-4">Past Polls</h2>
             <ul class="space-y-3">
-              <li *ngFor="let poll of pastPolls"
-                  (click)="openPoll(poll)"
-                  class="bg-gray-900 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-800">
-                {{ poll.title }}
-                <span class="block text-sm text-gray-400">Closed: {{ poll.deadline | date:'shortDate' }}</span>
-              </li>
+                <li *ngFor="let poll of pastPolls" (click)="openPoll(poll)"
+                    class="bg-gray-900 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-800">
+                    {{ poll.title }}
+                    <span class="block text-sm text-gray-400">Closed: {{ poll.deadline | date:'shortDate' }}</span>
+                </li>
             </ul>
-          </div>
         </div>
+    </div>
 
     <!-- Modal -->
     <div *ngIf="selectedPoll" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
@@ -36,45 +35,45 @@
             <h3 class="text-2xl font-bold text-cyan-300 mb-2">{{ selectedPoll.title }}</h3>
 
             <!-- <div *ngIf="!selectedPoll.hasVoted"> -->
-                
-                        <!-- <h1 class=" text-gray-400 italic mb-2">{{ selectedPoll.title }}</h1> -->
-                        <p class="text-gray-400 italic mb-2">{{ selectedPoll.description }}</p>
 
-                        <!-- Întrebare -->
-                        <div>
-                            <p class="text-xl font-semibold mb-2">{{ selectedPoll.question }}</p>
-                        </div>
+            <!-- <h1 class=" text-gray-400 italic mb-2">{{ selectedPoll.title }}</h1> -->
+            <p class="text-gray-400 italic mb-2">{{ selectedPoll.description }}</p>
 
-                        <!-- Variante de răspuns -->
-                        <form *ngIf="!hasVoted" class="space-y-4">
-                            <label *ngFor="let answer of selectedPoll.answers; let i = index"
-                                class="block bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700">
-                                <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-2"
-                                    [(ngModel)]="selectedAnswer" /> {{ answer }}
-                            </label>
+            <!-- Întrebare -->
+            <div>
+                <p class="text-xl font-semibold mb-2">{{ selectedPoll.question }}</p>
+            </div>
 
-                            <button type="button" (click)="submitVote()"
-                                class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded shadow transition"
-                                [disabled]="!selectedAnswer">
-                                Trimite votul
-                            </button>
-                        </form>
+            <!-- Variante de răspuns -->
+            <form *ngIf="!hasVoted" class="space-y-4">
+                <label *ngFor="let answer of selectedPoll.answers; let i = index"
+                    class="block bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700">
+                    <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-2"
+                        [(ngModel)]="selectedAnswer" /> {{ answer }}
+                </label>
 
-                        <!-- După vot: afișează rezultate -->
-                        <div *ngIf="hasVoted" class="space-y-3">
-                            <h2 class="text-lg font-bold text-cyan-400">Results:</h2>
+                <button type="button" (click)="submitVote()"
+                    class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded shadow transition"
+                    [disabled]="!selectedAnswer">
+                    Trimite votul
+                </button>
+            </form>
 
-                            <div *ngFor="let answer of selectedPoll.answers; let i = index" class="bg-gray-800 p-3 rounded">
-                                <div class="flex justify-between text-sm">
-                                    <span>{{ answer }}</span>
-                                    <span>{{ selectedPoll.results[i] }} votes</span>
-                                </div>
-                                <div class="w-full bg-gray-700 h-2 rounded mt-1 overflow-hidden">
-                                    <div class="bg-cyan-500 h-full"
-                                        [style.width.%]="( +selectedPoll.results[i] / totalVotes() ) * 100"></div>
-                                </div>
-                            </div>
-                        </div>
+            <!-- După vot: afișează rezultate -->
+            <div *ngIf="hasVoted" class="space-y-3">
+                <h2 class="text-lg font-bold text-cyan-400">Results:</h2>
+
+                <div *ngFor="let answer of selectedPoll.answers; let i = index" class="bg-gray-800 p-3 rounded">
+                    <div class="flex justify-between text-sm">
+                        <span>{{ answer }}</span>
+                        <span>{{ selectedPoll.results[i] }} votes</span>
+                    </div>
+                    <div class="w-full bg-gray-700 h-2 rounded mt-1 overflow-hidden">
+                        <div class="bg-cyan-500 h-full"
+                            [style.width.%]="( +selectedPoll.results[i] / totalVotes() ) * 100"></div>
+                    </div>
+                </div>
+            </div>
 
             <!-- </div> -->
 

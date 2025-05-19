@@ -73,14 +73,14 @@ export class PollVoteComponent {
     {
       id: 'poll3',
       question: 'Do you like Angular?',
-      answers: ['Yes', 'No'],
+      answers: ['Yes', 'No', 'Never used it'],
       created: new Date('2025-04-01T13:00:00Z'),
       deadline: new Date('2025-05-01T13:00:00Z'),
       createdBy: 'uid2',
       description: 'Opinion about Angular',
       isActive: false,
       realtime: false,
-      results: ['4', '1'],
+      results: ['4', '1', '2'],
       title: 'Angular Poll',
       totalVoters: 5,
       voters: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5']
