@@ -20,6 +20,8 @@ export class AuthComponent {
 
   email = '';
   password = '';
+  confirmPassword = '';
+  isSignupMode = false;
   errorMessage$: Observable<string | null>;
   loading$: Observable<boolean>;
 
@@ -35,6 +37,14 @@ export class AuthComponent {
 
   signup() {
     this.store.dispatch(signup({ email: this.email, password: this.password }));
+  }
+
+  switchToSignup() {
+    this.isSignupMode = true;
+  }
+
+  switchToLogin() {
+    this.isSignupMode = false;
   }
 
 }
