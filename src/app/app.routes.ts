@@ -6,6 +6,7 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 import { HomeComponent } from './pages/home/home.component';
 import { PollCreateComponent } from './pages/poll-create/poll-create.component';
 import { PollVoteComponent } from './pages/poll-vote/poll-vote.component';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
     // { path: '', component: ComingSoonComponent },
@@ -14,6 +15,6 @@ export const routes: Routes = [
     { path: 'user-dashboard', component: UserDashboardComponent },
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home', component: HomeComponent },
-    { path: 'create', component: PollCreateComponent },
-    { path: 'vote', component: PollVoteComponent }
+    { path: 'vote', component: PollVoteComponent },
+    { path: 'create', loadComponent: () => import('./pages/poll-create/poll-create.component').then(m => m.PollCreateComponent), canActivate: [adminGuard] },
 ];
