@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { logout, logoutSuccess, login, loginSuccess, loginFailure } from './auth.actions';
-import { exhaustMap, switchMap, map, catchError, tap } from 'rxjs/operators';
+import { logout, logoutSuccess, login, loginSuccess, loginFailure, clearAuthError } from './auth.actions';
+import { exhaustMap, switchMap, map, catchError, tap, delay } from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
@@ -43,11 +43,8 @@ export class AuthEffects {
               case 'auth/user-not-found':
                 userMessage = 'No account found with this email.';
                 break;
-              case 'auth/wrong-password':
+              case 'auth/invalid-password':
                 userMessage = 'Incorrect password.';
-                break;
-              case 'auth/email-already-in-use':
-                userMessage = 'This email is already in use.';
                 break;
               case 'auth/invalid-email':
                 userMessage = 'The email address is not valid.';
@@ -138,4 +135,9 @@ export class AuthEffects {
       )
     )
   );
+
+  clearErrorAfterDelay$ = createEffect(() =>
+    this.actions$.pipe(ofType(loginFailure), switchMap(() => of(clearAuthError()).pipe(delay(3000))))
+  );
+
 }

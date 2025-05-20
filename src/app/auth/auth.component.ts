@@ -7,7 +7,7 @@ import { Store, select } from '@ngrx/store';
 import { login } from './auth.actions';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './auth.service';
-import { signup, clearAuthError } from './auth.actions';
+import { signup, clearAuthError,loginFailure } from './auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -31,11 +31,14 @@ export class AuthComponent {
   }
 
   login() {
-    console.log('Login with', this.email, this.password);
     this.store.dispatch(login({ email: this.email, password: this.password }))
   }
 
   signup() {
+    if (this.password !== this.confirmPassword) {
+      this.store.dispatch(loginFailure({ error: 'Passwords do not match.' }));
+      return;
+    }
     this.store.dispatch(signup({ email: this.email, password: this.password }));
   }
 
