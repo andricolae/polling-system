@@ -7,3 +7,4 @@ export const logout = createAction('[Auth] Logout');
 export const logoutSuccess = createAction('[Auth] Logout Success');
 export const signup = createAction('[Auth] Signup', props<{ email: string; password: string }>()
 );
+export const clearAuthError = createAction('[Auth] Clear Error');

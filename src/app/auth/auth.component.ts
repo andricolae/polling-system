@@ -7,7 +7,7 @@ import { Store, select } from '@ngrx/store';
 import { login } from './auth.actions';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './auth.service';
-import { signup } from './auth.actions';
+import { signup, clearAuthError } from './auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -40,10 +40,12 @@ export class AuthComponent {
   }
 
   switchToSignup() {
+    this.store.dispatch(clearAuthError());
     this.isSignupMode = true;
   }
 
   switchToLogin() {
+    this.store.dispatch(clearAuthError());
     this.isSignupMode = false;
   }
 
