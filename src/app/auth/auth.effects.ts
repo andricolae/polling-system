@@ -43,6 +43,9 @@ export class AuthEffects {
               case 'auth/user-not-found':
                 userMessage = 'No account found with this email.';
                 break;
+              case 'INVALID_LOGIN_CREDENTIALS':
+                userMessage = 'Invalid email or password.';
+                break;
               case 'auth/invalid-password':
                 userMessage = 'Incorrect password.';
                 break;
