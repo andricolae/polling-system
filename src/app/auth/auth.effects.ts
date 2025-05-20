@@ -35,7 +35,32 @@ export class AuthEffects {
               })
             );
           }),
-          catchError(error => of(loginFailure({ error: error.message })))
+          catchError(error => {
+            const code = error.code || '';
+            let userMessage = 'Authentication failed.';
+
+            switch (code) {
+              case 'auth/user-not-found':
+                userMessage = 'No account found with this email.';
+                break;
+              case 'auth/wrong-password':
+                userMessage = 'Incorrect password.';
+                break;
+              case 'auth/email-already-in-use':
+                userMessage = 'This email is already in use.';
+                break;
+              case 'auth/invalid-email':
+                userMessage = 'The email address is not valid.';
+                break;
+              case 'auth/weak-password':
+                userMessage = 'Password should be at least 6 characters.';
+                break;
+              case 'auth/too-many-requests':
+                userMessage = 'Too many attempts. Try again later.';
+                break;
+            }
+            return of(loginFailure({ error: userMessage }));
+          })
         )
       )
     )
@@ -73,7 +98,29 @@ export class AuthEffects {
               map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
             );
           }),
-          catchError(error => of(loginFailure({ error: error.message })))
+          catchError(error => {
+            const code = error.code || '';
+            let userMessage = 'Signup failed.';
+
+            switch (code) {
+              case 'auth/email-already-in-use':
+                userMessage = 'This email is already in use.';
+                break;
+              case 'auth/invalid-email':
+                userMessage = 'The email address is not valid.';
+                break;
+              case 'auth/weak-password':
+                userMessage = 'Password should be at least 6 characters.';
+                break;
+              case 'auth/operation-not-allowed':
+                userMessage = 'Signup is currently disabled.';
+                break;
+              default:
+                userMessage = 'Something went wrong. Try again.';
+            }
+
+            return of(loginFailure({ error: userMessage }));
+          })
         )
       )
     )

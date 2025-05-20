@@ -6,10 +6,15 @@
 <!-- Container -->
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800 px-4">
 
+
   <!-- Login Card -->
   <form *ngIf="!isSignupMode" #authForm="ngForm" (ngSubmit)="login()"
     class="w-full max-w-md bg-gray-800 text-white p-8 rounded-2xl shadow-2xl space-y-6">
     <h2 class="text-3xl font-extrabold text-center text-cyan-400">Log-In to Chime-In</h2>
+
+    <div *ngIf="errorMessage$ | async as error" class="text-red-500 text-sm mt-2 text-center">
+      {{ error }}
+    </div>
 
     <!-- Email -->
     <div>
@@ -40,6 +45,9 @@
   <form *ngIf="isSignupMode" #signupForm="ngForm" (ngSubmit)="signup()"
     class="w-full max-w-md bg-gray-800 text-white p-8 rounded-2xl shadow-2xl space-y-6">
     <h2 class="text-3xl font-extrabold text-center text-cyan-400">Sign Up</h2>
+    <div *ngIf="errorMessage$ | async as error" class="text-red-500 text-sm mt-2 text-center">
+      {{ error }}
+    </div>
 
     <!-- Email -->
     <div>
