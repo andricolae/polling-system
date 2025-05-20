@@ -2,8 +2,8 @@ import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { selectIsAuthenticated } from '../../auth/auth.selectors';
+import { Observable,map } from 'rxjs';
+import { selectIsAuthenticated, selectAuthUser } from '../../auth/auth.selectors';
 import { logout } from '../../auth/auth.actions';
 import { NgIf } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -18,9 +18,17 @@ import { CommonModule } from '@angular/common';
 export class HeaderComponent {
 
   isAuthenticated$: Observable<boolean>;
+  username$: Observable<string | null>;
 
   constructor(private router: Router, private store: Store) {
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
+    this.username$ = this.store.select(selectAuthUser).pipe(
+      map(user => {
+        if (!user?.email) return null;
+        const namePart = user.email.split('@')[0];
+        return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      })
+    );
   }
 
   menuOpen: boolean = false;
@@ -36,5 +44,8 @@ export class HeaderComponent {
 
   logout() {
     this.store.dispatch(logout());
+  }
+
+  showName() {
   }
 }
