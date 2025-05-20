@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { logout, logoutSuccess, login, loginSuccess, loginFailure } from './auth.actions';
-import { exhaustMap, switchMap, map, catchError, tap } from 'rxjs/operators';
+import { logout, logoutSuccess, login, loginSuccess, loginFailure, clearAuthError } from './auth.actions';
+import { exhaustMap, switchMap, map, catchError, tap, delay } from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
@@ -35,7 +35,32 @@ export class AuthEffects {
               })
             );
           }),
-          catchError(error => of(loginFailure({ error: error.message })))
+          catchError(error => {
+            const code = error.code || '';
+            let userMessage = 'Authentication failed.';
+
+            switch (code) {
+              case 'auth/user-not-found':
+                userMessage = 'No account found with this email.';
+                break;
+              case 'INVALID_LOGIN_CREDENTIALS':
+                userMessage = 'Invalid email or password.';
+                break;
+              case 'auth/invalid-password':
+                userMessage = 'Incorrect password.';
+                break;
+              case 'auth/invalid-email':
+                userMessage = 'The email address is not valid.';
+                break;
+              case 'auth/weak-password':
+                userMessage = 'Password should be at least 6 characters.';
+                break;
+              case 'auth/too-many-requests':
+                userMessage = 'Too many attempts. Try again later.';
+                break;
+            }
+            return of(loginFailure({ error: userMessage }));
+          })
         )
       )
     )
@@ -73,7 +98,29 @@ export class AuthEffects {
               map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
             );
           }),
-          catchError(error => of(loginFailure({ error: error.message })))
+          catchError(error => {
+            const code = error.code || '';
+            let userMessage = 'Signup failed.';
+
+            switch (code) {
+              case 'auth/email-already-in-use':
+                userMessage = 'This email is already in use.';
+                break;
+              case 'auth/invalid-email':
+                userMessage = 'The email address is not valid.';
+                break;
+              case 'auth/weak-password':
+                userMessage = 'Password should be at least 6 characters.';
+                break;
+              case 'auth/operation-not-allowed':
+                userMessage = 'Signup is currently disabled.';
+                break;
+              default:
+                userMessage = 'Something went wrong. Try again.';
+            }
+
+            return of(loginFailure({ error: userMessage }));
+          })
         )
       )
     )
@@ -91,4 +138,9 @@ export class AuthEffects {
       )
     )
   );
+
+  clearErrorAfterDelay$ = createEffect(() =>
+    this.actions$.pipe(ofType(loginFailure), switchMap(() => of(clearAuthError()).pipe(delay(3000))))
+  );
+
 }
