@@ -6,7 +6,7 @@
 
 ## 🔍 Overview
 
-Our Polling System is a dynamic Angular application developed as part of the NTT DATA Tech Trek initiative by Anna, Tudor, and Anca. The app allows users to easily create, distribute, and participate in polls—offering real-time feedback collection, voting simulations, and analytics.
+Our Polling System is a dynamic Angular application developed as part of the NTT DATA Tech Trek initiative by Anna, Tudor and Andrei. The app allows users to easily create, distribute, and participate in polls—offering real-time feedback collection, voting simulations, and analytics.
 
 This project showcases a modern polling interface integrated with Firebase for authentication, database storage, and analytics.
 
