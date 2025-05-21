@@ -1,7 +1,7 @@
 <nav id="header" class="fixed top-0 z-30 w-full text-white">
 
     <div
-        class="container flex flex-wrap items-center justify-between w-full py-2 mx-auto mt-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+        class="flex flex-wrap items-center justify-between w-full py-4 px-6 mt-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
 
         <div class="flex items-center pl-4">
             <a class=" cursor-pointer text-2xl font-bold no-underline toggleColour hover:no-underline lg:text-4xl text-white flex items-center gap-2"
@@ -22,45 +22,56 @@
         </div>
 
         <div [ngClass]="{
-                'hidden': !menuOpen,
-                'block': menuOpen
-              }"
-            class="cursor-pointer z-20 flex-grow w-full p-4 mt-2 text-black lg:flex lg:items-center lg:w-auto lg:mt-0 ">
+            'hidden': !menuOpen,
+            'block': menuOpen
+          }"
+            class="z-20 w-full p-4 mt-2 text-white lg:flex lg:items-center lg:w-auto lg:mt-0 lg:bg-transparent lg:p-0">
 
-            <ul class="items-center justify-end flex-1 list-reset lg:flex">
-                <li class="mr-3">
+            <ul class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-end flex-1">
+
+                <li>
                     <a (click)="navigateTo('/')"
-                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
+                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:underline">
                         Home</a>
                 </li>
-                <li class="mr-3">
+
+                <li>
                     <a (click)="navigateTo('/create')"
-                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400">
+                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:underline">
                         Create</a>
                 </li>
-                <li class="mr-3">
+
+                <li>
                     <a (click)="navigateTo('/vote')"
-                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400">
+                        class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:underline">
                         Vote</a>
                 </li>
-            </ul>
-            <ng-container *ngIf="isAuthenticated$ | async; else loginLink">
-                <span *ngIf="username$ | async as username" class="mr-4 text-white font-medium">
-                    Hi {{ username }}!
-                </span>
-                <a (click)="logout()"
-                    class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
-                    Log Out
-                </a>
-            </ng-container>
+                <li>
+                    <ng-container *ngIf="isAuthenticated$ | async; else loginLink">
+                        <div class="flex items-center gap-2">
+                            <span *ngIf="username$ | async as username" class="hidden lg:inline text-white font-medium">
+                                Hello, {{ username }}!
+                            </span>
+                            <a (click)="logout()" class="inline-block p-2 hover:opacity-60 transition"
+                                aria-label="Log out">
+                                <img src="logout.png" alt="Log out" class="w-5 h-5" />
+                            </a>
+                        </div>
+                    </ng-container>
+                </li>
 
-            <ng-template #loginLink>
-                <a (click)="navigateTo('/login')"
-                    class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:text-underline">
-                    Log In
-                </a>
-            </ng-template>
+                <li>
+                    <ng-template #loginLink>
+                        <a (click)="navigateTo('/login')"
+                            class="inline-block px-4 py-2 font-bold text-white no-underline hover:text-cyan-400 hover:underline">
+                            Log In
+                        </a>
+                    </ng-template>
+                </li>
+
+            </ul>
         </div>
+
+
     </div>
-    <hr class="py-0 my-0 border-b border-gray-100 opacity-25">
 </nav>

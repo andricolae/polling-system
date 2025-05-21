@@ -131,7 +131,10 @@ export class AuthEffects {
       ofType(logout),
       exhaustMap(() =>
         from(signOut(this.auth)).pipe(
-          tap(() => this.router.navigate(['/login'])),
+          tap(() => {
+            localStorage.removeItem('user');
+            this.router.navigate(['/login'])
+          }),
           map(() => logoutSuccess()),
           catchError(() => of(logoutSuccess()))
         )
@@ -141,6 +144,17 @@ export class AuthEffects {
 
   clearErrorAfterDelay$ = createEffect(() =>
     this.actions$.pipe(ofType(loginFailure), switchMap(() => of(clearAuthError()).pipe(delay(3000))))
+  );
+
+  loginSuccessPersist$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(loginSuccess),
+        tap(({ user }) => {
+          localStorage.setItem('user', JSON.stringify(user));
+        })
+      ),
+    { dispatch: false }
   );
 
 }

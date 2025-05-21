@@ -1,84 +1,196 @@
-<div class="min-h-screen bg-gradient-to-br from-cyan-400 to-teal-700 p-6 pt-24 text-white">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        <!-- Ongoing votes -->
-        <div>
-            <h2 class="text-xl font-bold mb-4">Ongoing Votes</h2>
-            <ul class="space-y-3">
-                <li *ngFor="let poll of ongoingPolls" (click)="openPoll(poll)"
-                    class="bg-gray-900 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-800">
-                    {{ poll.title }}
-                    <span class="block text-sm text-gray-400">Open until: {{ poll.deadline | date:'shortDate' }}</span>
-                </li>
-            </ul>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 p-6 pt-24 text-white">
+    <div class="max-w-6xl mx-auto">
+        @if (loading) {
+        <div class="flex justify-center items-center my-10">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
         </div>
+        }
 
-        <!-- Past votes -->
-        <div>
-            <h2 class="text-xl font-bold mb-4">Past Polls</h2>
-            <ul class="space-y-3">
-                <li *ngFor="let poll of pastPolls" (click)="openPoll(poll)"
-                    class="bg-gray-900 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-800">
-                    {{ poll.title }}
-                    <span class="block text-sm text-gray-400">Closed: {{ poll.deadline | date:'shortDate' }}</span>
-                </li>
-            </ul>
+        @if (errorMessage) {
+        <div class="bg-red-700 text-white p-4 rounded-lg mb-6">
+            {{ errorMessage }}
         </div>
+        }
+
+        @if (!loading && !currentUserId) {
+        <div class="flex flex-col items-center justify-center text-center px-4 py-20">
+            <h2 class="text-4xl font-extrabold text-cyan-400 mb-6">Not Logged In</h2>
+            <p class="text-lg text-gray-300 mb-6">You need to be logged in to view polls.</p>
+            <button (click)="navigateTo('/login')"
+                class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-lg py-3 px-6 rounded shadow transition">
+                Log In
+            </button>
+        </div>
+        }
+
+
+        @if (!loading && currentUserId && ongoingPolls.length === 0 && pastPolls.length === 0) {
+        <div class="text-center py-10 bg-gray-800 rounded-lg">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-4">No Polls Available</h2>
+            <p class="text-gray-300">There are currently no polls available for you to participate in.</p>
+        </div>
+        }
+
+        @if (!loading && (ongoingPolls.length > 0 || pastPolls.length > 0)) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h2 class="text-xl font-bold mb-4 text-cyan-400">Ongoing Polls</h2>
+                @if (ongoingPolls.length === 0) {
+                <div class="text-gray-400 italic bg-gray-800 p-4 rounded-lg">
+                    No active polls available for you.
+                </div>
+                }
+
+                @if (ongoingPolls.length > 0) {
+                <ul class="space-y-3">
+                    @for (poll of ongoingPolls; track poll.id) {
+                    <li (click)="openPoll(poll)"
+                        class="bg-gray-800 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-700 transition-colors">
+                        <div class="font-semibold">{{ poll.title }}</div>
+                        <span class="block text-sm text-gray-400">
+                            Open until: {{ poll.deadline | date:'MMM d, y, h:mm a' }}
+                        </span>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="inline-block text-xs text-green-400 bg-green-900 px-2 py-1 rounded-full">
+                                Active
+                            </span>
+                            @if (hasUserVoted(poll)) {
+                            <span class="inline-block text-xs text-cyan-400 bg-cyan-900 px-2 py-1 rounded-full">
+                                ✓ Voted
+                            </span>
+                            }
+                        </div>
+                    </li>
+                    }
+                </ul>
+                }
+            </div>
+
+            <div>
+                <h2 class="text-xl font-bold mb-4 text-cyan-400">Closed Polls</h2>
+                @if (pastPolls.length === 0) {
+                <div class="text-gray-400 italic bg-gray-800 p-4 rounded-lg">
+                    No past polls available for you.
+                </div>
+                }
+
+                @if (pastPolls.length > 0) {
+                <ul class="space-y-3">
+                    @for (poll of pastPolls; track poll.id) {
+                    <li (click)="openPoll(poll)"
+                        class="bg-gray-800 p-4 rounded-lg shadow cursor-pointer hover:bg-gray-700 transition-colors">
+                        <div class="font-semibold">{{ poll.title }}</div>
+                        <span class="block text-sm text-gray-400">
+                            Closed: {{ poll.deadline | date:'MMM d, y' }}
+                        </span>
+                        <span class="inline-block mt-2 text-xs text-yellow-400 bg-yellow-900 px-2 py-1 rounded-full">
+                            Closed
+                        </span>
+                    </li>
+                    }
+                </ul>
+                }
+            </div>
+        </div>
+        }
     </div>
 
-    <!-- Modal -->
-    <div *ngIf="selectedPoll" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div class="bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md relative">
+    @if (selectedPoll) {
+    <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 px-4">
+        <div
+            class="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto custom-scroll relative">
             <button (click)="closeModal()"
                 class="absolute top-2 right-3 text-gray-300 hover:text-white text-xl">&times;</button>
 
-            <h3 class="text-2xl font-bold text-cyan-300 mb-2">{{ selectedPoll.title }}</h3>
+            <h3 class="text-2xl font-bold text-cyan-400 mb-2">{{ selectedPoll.title }}</h3>
 
-            <!-- <div *ngIf="!selectedPoll.hasVoted"> -->
+            <div class="mb-3">
+                @if (selectedPoll.isActive) {
+                <span class="bg-green-900 text-green-400 px-3 py-1 rounded-full text-sm font-medium">
+                    Active
+                </span>
+                } @else {
+                <span class="bg-yellow-900 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium">
+                    Closed
+                </span>
+                }
 
-            <!-- <h1 class=" text-gray-400 italic mb-2">{{ selectedPoll.title }}</h1> -->
-            <p class="text-gray-400 italic mb-2">{{ selectedPoll.description }}</p>
-
-            <!-- Întrebare -->
-            <div>
-                <p class="text-xl font-semibold mb-2">{{ selectedPoll.question }}</p>
+                @if (hasUserVoted(selectedPoll)) {
+                <span class="ml-2 bg-cyan-900 text-cyan-400 px-3 py-1 rounded-full text-sm font-medium">
+                    ✓ Voted
+                </span>
+                }
             </div>
 
-            <!-- Variante de răspuns -->
-            <form *ngIf="!hasVoted" class="space-y-4">
-                <label *ngFor="let answer of selectedPoll.answers; let i = index"
-                    class="block bg-gray-800 p-3 rounded cursor-pointer hover:bg-gray-700">
-                    <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-2"
-                        [(ngModel)]="selectedAnswer" /> {{ answer }}
-                </label>
+            <p class="text-gray-400 italic mb-4">{{ selectedPoll.description }}</p>
 
-                <button type="button" (click)="submitVote()"
-                    class="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded shadow transition"
-                    [disabled]="!selectedAnswer">
-                    Trimite votul
-                </button>
-            </form>
+            <div class="mb-4">
+                <p class="text-xl font-semibold">{{ selectedPoll.question }}</p>
+            </div>
 
-            <!-- După vot: afișează rezultate -->
-            <div *ngIf="hasVoted" class="space-y-3">
-                <h2 class="text-lg font-bold text-cyan-400">Results:</h2>
+            @if (successMessage) {
+            <div class="mb-4 bg-green-700 text-white p-3 rounded">
+                {{ successMessage }}
+            </div>
+            }
 
-                <div *ngFor="let answer of selectedPoll.answers; let i = index" class="bg-gray-800 p-3 rounded">
-                    <div class="flex justify-between text-sm">
-                        <span>{{ answer }}</span>
-                        <span>{{ selectedPoll.results[i] }} votes</span>
+            @if (errorMessage) {
+            <div class="mb-4 bg-red-700 text-white p-3 rounded">
+                {{ errorMessage }}
+            </div>
+            }
+
+            @if (selectedPoll.isActive && !hasVoted) {
+            <div class="max-h-64 overflow-y-auto pr-1 custom-scroll space-y-4">
+
+                <form class="space-y-4">
+                    @for (answer of selectedPoll.answers; track answer; let i = $index) {
+                    <label class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600 transition-colors">
+                        <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-2"
+                            [(ngModel)]="selectedAnswer" /> {{ answer }}
+                    </label>
+                    }
+
+                    <div class="pt-2">
+                        <button type="button" (click)="submitVote()" [disabled]="!selectedAnswer || loading"
+                            class="w-full mt-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 rounded shadow transition-colors"
+                            [class.opacity-50]="!selectedAnswer || loading">
+                            @if (loading) {
+                            <span>Submitting...</span>
+                            } @else {
+                            <span>Submit Vote</span>
+                            }
+                        </button>
                     </div>
-                    <div class="w-full bg-gray-700 h-2 rounded mt-1 overflow-hidden">
+                </form>
+            </div>
+
+            }
+
+            @if (hasVoted || !selectedPoll.isActive) {
+            <div class="space-y-3 ">
+                <h2 class="text-lg font-bold text-cyan-400 mb-2 ">Results</h2>
+
+                @for (answer of selectedPoll.answers; track answer; let i = $index) {
+                <div class="bg-gray-700 p-3 rounded mb-2">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>{{ answer }}</span>
+                        <span>{{ selectedPoll.results[i] || '0' }} votes</span>
+                    </div>
+                    <div class="w-full bg-gray-600 h-2 rounded overflow-hidden">
                         <div class="bg-cyan-500 h-full"
-                            [style.width.%]="( +selectedPoll.results[i] / totalVotes() ) * 100"></div>
+                            [style.width.%]="(totalVotes() > 0) ? (parseInt(selectedPoll.results[i]) / totalVotes() * 100) : 0">
+                        </div>
                     </div>
                 </div>
-            </div>
+                }
 
-            <!-- </div> -->
-
-            <div *ngIf="selectedPoll.isActive">
+                <div class="text-sm text-gray-400 mt-4">
+                    Total votes: {{ totalVotes() }}
+                </div>
             </div>
+            }
         </div>
     </div>
+    }
 </div>

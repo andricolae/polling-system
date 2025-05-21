@@ -1,117 +1,179 @@
-import { DatePipe, NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface Poll {
-  id: string;
-  question:string;
-  answers:string[];
-  created: Date;
-  deadline: Date;
-  createdBy:string;
-  description:string;
-  isActive:boolean;
-  realtime: false;
-  results: string[];
-  title: string;
-  totalVoters: number;
-  voters: string[];
-}
+import { PollService, PollData } from '../../services/poll.service';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-poll-vote',
-  imports: [NgFor, NgIf, FormsModule, DatePipe],
+  standalone: true,
+  imports: [FormsModule, DatePipe, CommonModule],
   templateUrl: './poll-vote.component.html',
   styleUrl: './poll-vote.component.css'
 })
-export class PollVoteComponent {
+export class PollVoteComponent implements OnInit {
+  ongoingPolls: PollData[] = [];
+  pastPolls: PollData[] = [];
+  selectedPoll: PollData | null = null;
+
+  loading = false;
   selectedAnswer: string = '';
   hasVoted: boolean = false;
-  selectedPoll: Poll | null = null;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
-  submitVote() {
-    this.hasVoted = true;
-    // You would submit this to Firebase
+  currentUserId: string | null = null;
+
+  constructor(private pollService: PollService, private router: Router) {}
+
+  ngOnInit() {
+    this.currentUserId = this.pollService.getCurrentUserId();
+    this.loadPolls();
+  }
+  
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 
-  totalVotes(): number {
-    return this.selectedPoll?.results.map(r => +r).reduce((a, b) => a + b, 0) || 0;
+  loadPolls() {
+    this.loading = true;
+    this.errorMessage = null;
+
+    this.pollService.getActivePolls().subscribe({
+      next: (polls) => {
+        this.ongoingPolls = this.filterPollsForCurrentUser(polls);
+        console.log('Active polls loaded for current user:', this.ongoingPolls.length);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading active polls:', error);
+        this.errorMessage = 'Could not load active polls';
+        this.loading = false;
+      }
+    });
+
+    this.pollService.getPastPolls().subscribe({
+      next: (polls) => {
+        this.pastPolls = this.filterPollsForCurrentUser(polls);
+        console.log('Past polls loaded for current user:', this.pastPolls.length);
+      },
+      error: (error) => {
+        console.error('Error loading past polls:', error);
+        this.errorMessage = 'Could not load past polls';
+      }
+    });
   }
 
-  ongoingPolls: Poll[] = [
-    {
-      id: 'poll1',
-      question: 'What do you think about the app design?',
-      answers: ['Super cool', 'Boooring'],
-      created: new Date('2025-05-13T13:00:00Z'),
-      deadline: new Date('2025-05-27T13:00:00Z'),
-      createdBy: 'uid1',
-      description: 'Test poll about page design.',
-      isActive: true,
-      realtime: false,
-      results: ['1', '1'],
-      title: 'Test Poll',
-      totalVoters: 2,
-      voters: ['uid1', 'uid2', 'uid3']
-    },
-    { id: 'poll2',
-      question: 'What do you think about the app overall?',
-      answers: ['Yay', 'Nay'],
-      created: new Date('2025-06-01T13:00:00Z'),
-      deadline: new Date('2025-06-08T13:00:00Z'),
-      createdBy: 'uid1',
-      description: 'Test poll about app.',
-      isActive: true,
-      realtime: false,
-      results: ['1', '1'],
-      title: 'Poll about the app',
-      totalVoters: 2,
-      voters: ['uid1', 'uid2', 'uid3'] }
-  ];
-
-  pastPolls: Poll[] = [
-    {
-      id: 'poll3',
-      question: 'Do you like Angular?',
-      answers: ['Yes', 'No', 'Never used it'],
-      created: new Date('2025-04-01T13:00:00Z'),
-      deadline: new Date('2025-05-01T13:00:00Z'),
-      createdBy: 'uid2',
-      description: 'Opinion about Angular',
-      isActive: false,
-      realtime: false,
-      results: ['4', '1', '2'],
-      title: 'Angular Poll',
-      totalVoters: 5,
-      voters: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5']
-    },
-    {
-      id: 'poll4',
-      question: 'Should we use Tailwind?',
-      answers: ['Absolutely', 'Not really'],
-      created: new Date('2025-04-10T13:00:00Z'),
-      deadline: new Date('2025-05-10T13:00:00Z'),
-      createdBy: 'uid2',
-      description: 'Feedback on Tailwind usage',
-      isActive: false,
-      realtime: false,
-      results: ['3', '2'],
-      title: 'Tailwind CSS Poll',
-      totalVoters: 5,
-      voters: ['uid1', 'uid2', 'uid3', 'uid4', 'uid5']
+  private filterPollsForCurrentUser(polls: PollData[]): PollData[] {
+    if (!this.currentUserId) {
+      console.warn('No current user ID available. Unable to filter polls.');
+      return [];
     }
-  ];
 
-  openPoll(poll: Poll) {
+    return polls.filter(poll =>
+      poll.voters &&
+      poll.voters.includes(this.currentUserId!)
+    );
+  }
+
+  openPoll(poll: PollData) {
     this.selectedPoll = poll;
-    this.hasVoted = !poll.isActive;
     this.selectedAnswer = '';
+    this.errorMessage = null;
+    this.successMessage = null;
+
+    if (poll.isActive) {
+      this.hasVoted = !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
+    } else {
+      this.hasVoted = true;
+    }
   }
 
   closeModal() {
     this.selectedPoll = null;
     this.selectedAnswer = '';
     this.hasVoted = false;
+    this.errorMessage = null;
+    this.successMessage = null;
   }
-  
+
+  submitVote() {
+    if (!this.selectedPoll || !this.selectedAnswer) {
+      this.errorMessage = 'Please select an answer';
+      return;
+    }
+
+    if (!this.selectedPoll.isActive) {
+      this.errorMessage = 'This poll is closed';
+      return;
+    }
+
+    if (!this.selectedPoll.voters.includes(this.currentUserId!)) {
+      this.errorMessage = 'You are not authorized to vote on this poll';
+      return;
+    }
+
+    const answerIndex = this.selectedPoll.answers.indexOf(this.selectedAnswer);
+    if (answerIndex === -1) {
+      console.error('Selected answer not found in poll options');
+      this.errorMessage = 'Invalid selection';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = null;
+
+    const pollId = this.selectedPoll.id;
+    if (!pollId) {
+      console.error('Poll ID is missing');
+      this.errorMessage = 'Invalid poll';
+      this.loading = false;
+      return;
+    }
+
+    this.pollService.submitVote(pollId, answerIndex).subscribe({
+      next: (success) => {
+        this.loading = false;
+
+        if (success) {
+          if (this.selectedPoll) {
+            const updatedResults = [...this.selectedPoll.results];
+            updatedResults[answerIndex] = (parseInt(updatedResults[answerIndex]) + 1).toString();
+            this.selectedPoll.results = updatedResults;
+
+            if (this.currentUserId && !this.selectedPoll.voted.includes(this.currentUserId)) {
+              this.selectedPoll.voted.push(this.currentUserId);
+            }
+          }
+
+          this.hasVoted = true;
+          this.successMessage = 'Your vote has been recorded!';
+
+          setTimeout(() => {
+            this.loadPolls();
+          }, 2000);
+        } else {
+          this.errorMessage = 'Unable to submit vote. You may have already voted on this poll.';
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        console.error('Error submitting vote:', error);
+        this.errorMessage = 'Failed to submit vote. Please try again.';
+      }
+    });
+  }
+
+  totalVotes(): number {
+    return this.selectedPoll?.results.map(r => +r).reduce((a, b) => a + b, 0) || 0;
+  }
+
+  parseInt(value: string): number {
+    return parseInt(value) || 0;
+  }
+
+  hasUserVoted(poll: PollData): boolean {
+    return !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
+  }
 }
