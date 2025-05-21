@@ -9,7 +9,7 @@
 
   <!-- Login Card -->
   <form *ngIf="!isSignupMode" #authForm="ngForm" (ngSubmit)="login()"
-    class="w-full max-w-md bg-gray-800 text-white p-8 rounded-2xl shadow-2xl space-y-6">
+    class="w-full max-w-md text-white p-8 rounded-2xl shadow-2xl space-y-6">
     <h2 class="text-3xl font-extrabold text-center text-cyan-400">Log-In to Chime-In</h2>
 
     <div *ngIf="errorMessage$ | async as error" class="text-red-500 text-sm mt-2 text-center">
@@ -43,7 +43,7 @@
 
   <!-- Signup Card -->
   <form *ngIf="isSignupMode" #signupForm="ngForm" (ngSubmit)="signup()"
-    class="w-full max-w-md bg-gray-800 text-white p-8 rounded-2xl shadow-2xl space-y-6">
+    class="w-full max-w-md text-white p-8 rounded-2xl shadow-2xl space-y-6">
     <h2 class="text-3xl font-extrabold text-center text-cyan-400">Sign Up</h2>
     <div *ngIf="errorMessage$ | async as error" class="text-red-500 text-sm mt-2 text-center">
       {{ error }}

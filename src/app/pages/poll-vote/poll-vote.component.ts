@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PollService, PollData } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-poll-vote',
@@ -24,11 +25,15 @@ export class PollVoteComponent implements OnInit {
 
   currentUserId: string | null = null;
 
-  constructor(private pollService: PollService) {}
+  constructor(private pollService: PollService, private router: Router) {}
 
   ngOnInit() {
     this.currentUserId = this.pollService.getCurrentUserId();
     this.loadPolls();
+  }
+  
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 
   loadPolls() {
