@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable,map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { selectIsAuthenticated, selectAuthUser } from '../../auth/auth.selectors';
 import { logout } from '../../auth/auth.actions';
 import { NgIf } from '@angular/common';
@@ -38,7 +38,24 @@ export class HeaderComponent {
   }
 
   navigateTo(path: string) {
-    this.router.navigate([path]);
+    if (path === '/') {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const { role } = JSON.parse(userData);
+        if (role === 'admin') {
+          this.router.navigate(['/admin-dashboard']);
+        } else if (role === 'user') {
+          this.router.navigate(['/user-dashboard']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      } else {
+        this.router.navigate(['/']);
+      }
+    } else {
+      this.router.navigate([path]);
+    }
+
     this.menuOpen = false;
   }
 
