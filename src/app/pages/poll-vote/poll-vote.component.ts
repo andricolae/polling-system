@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { PollService, PollData } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { PieChartComponent } from "../../components/pie-chart/pie-chart.component";
 
 @Component({
   selector: 'app-poll-vote',
   standalone: true,
-  imports: [FormsModule, DatePipe, CommonModule],
+  imports: [FormsModule, DatePipe, CommonModule, PieChartComponent],
   templateUrl: './poll-vote.component.html',
   styleUrl: './poll-vote.component.css'
 })
@@ -25,13 +26,17 @@ export class PollVoteComponent implements OnInit {
 
   currentUserId: string | null = null;
 
-  constructor(private pollService: PollService, private router: Router) {}
+  constructor(private pollService: PollService, private router: Router) { }
 
   ngOnInit() {
     this.currentUserId = this.pollService.getCurrentUserId();
     this.loadPolls();
+
+    console.log('Labels:', this.chartLabels);
+    console.log('Series:', this.chartSeries);
+
   }
-  
+
   navigateTo(path: string) {
     this.router.navigate([path]);
   }
@@ -176,4 +181,13 @@ export class PollVoteComponent implements OnInit {
   hasUserVoted(poll: PollData): boolean {
     return !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
   }
+
+  get chartSeries(): number[] {
+    return this.selectedPoll?.results?.map(r => +r) ?? [];
+  }
+
+  get chartLabels(): string[] {
+    return this.selectedPoll?.answers ?? [];
+  }
+
 }

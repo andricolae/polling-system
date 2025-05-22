@@ -188,9 +188,19 @@
                 <div class="text-sm text-gray-400 mt-4">
                     Total votes: {{ totalVotes() }}
                 </div>
+
+               
+
+
             </div>
             }
+            <div class="mt-6 bg-gray-800 p-4 rounded">
+                <app-pie-chart [labels]="chartLabels" [series]="chartSeries">
+                </app-pie-chart>
+    
+            </div>
         </div>
+
     </div>
     }
 </div>
