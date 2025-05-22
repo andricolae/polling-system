@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white px-4 py-20">
+    <div class="max-w-5xl mx-auto space-y-10">
+  
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-extrabold text-cyan-400">User Dashboard</h1>
+      </div>
+  
+      <!-- Active Polls -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4 text-cyan-400">Your Active Polls</h2>
+  
+        <ul *ngIf="activePolls.length > 0; else noActive" class="space-y-3">
+          <li *ngFor="let poll of activePolls"
+              class="bg-gray-700 p-4 rounded hover:bg-gray-600 transition cursor-pointer"
+              (click)="navigateTo('/vote')">
+            <div class="font-semibold">{{ poll.title }}</div>
+            <p class="text-sm text-gray-300">{{ poll.description }}</p>
+            <div class="mt-2 flex gap-2 text-xs">
+              <span class="text-green-400 bg-green-900 px-2 py-1 rounded-full">Open</span>
+              <span *ngIf="poll.hasVoted" class="text-cyan-400 bg-cyan-900 px-2 py-1 rounded-full">✓ Voted</span>
+              <span *ngIf="!poll.hasVoted" class="text-yellow-400 bg-yellow-900 px-2 py-1 rounded-full">Not Voted</span>
+            </div>
+          </li>
+        </ul>
+  
+        <ng-template #noActive>
+          <p class="text-gray-400 italic text-sm">No active polls assigned to you.</p>
+        </ng-template>
+      </div>
+  
+      <!-- Voting History -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4 text-cyan-400">Your Voting History</h2>
+  
+        <ul *ngIf="votedPolls.length > 0; else noHistory" class="space-y-3">
+          <li *ngFor="let poll of votedPolls"
+              class="bg-gray-700 p-4 rounded hover:bg-gray-600 transition">
+            <div class="font-semibold">{{ poll.title }}</div>
+            <p class="text-sm text-gray-400">Voted on: {{ poll.voteDate | date:'MMM d, y' }}</p>
+          </li>
+        </ul>
+  
+        <ng-template #noHistory>
+          <p class="text-gray-400 italic text-sm">You haven't voted on any polls yet.</p>
+        </ng-template>
+      </div>
+  
+    </div>
+  </div>
+  
