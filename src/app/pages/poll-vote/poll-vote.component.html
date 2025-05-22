@@ -190,7 +190,15 @@
                 </div>
             </div>
             }
+            @if (!selectedPoll.isActive) {
+                <div class="mt-6 bg-gray-800 p-4 rounded">
+                    <app-pie-chart [labels]="chartLabels" [series]="chartSeries">
+                    </app-pie-chart>
+                </div>
+                }
+                
         </div>
+
     </div>
     }
 </div>
