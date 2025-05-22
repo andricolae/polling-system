@@ -157,4 +157,9 @@ export class PollCreateComponent implements OnInit {
 
     return true;
   }
+
+  trackByIndex(index: number, item: string): number {
+    return index;
+  }
+  
 }
