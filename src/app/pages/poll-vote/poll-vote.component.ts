@@ -32,9 +32,6 @@ export class PollVoteComponent implements OnInit {
     this.currentUserId = this.pollService.getCurrentUserId();
     this.loadPolls();
 
-    console.log('Labels:', this.chartLabels);
-    console.log('Series:', this.chartSeries);
-
   }
 
   navigateTo(path: string) {

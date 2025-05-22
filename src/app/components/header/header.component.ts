@@ -19,7 +19,8 @@ export class HeaderComponent {
 
   isAuthenticated$: Observable<boolean>;
   username$: Observable<string | null>;
-
+  isAdmin$: Observable<boolean>;
+  
   constructor(private router: Router, private store: Store) {
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
     this.username$ = this.store.select(selectAuthUser).pipe(
@@ -28,6 +29,9 @@ export class HeaderComponent {
         const namePart = user.email.split('@')[0];
         return namePart.charAt(0).toUpperCase() + namePart.slice(1);
       })
+    );
+    this.isAdmin$ = this.store.select(selectAuthUser).pipe(
+      map(user => user?.role === 'admin')
     );
   }
 
