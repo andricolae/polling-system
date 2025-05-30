@@ -19,6 +19,8 @@ export class PollCreateComponent implements OnInit {
   maxOptions = 5;
   resultTiming: 'end' | 'after' = 'end';
   deadline: string = '';
+  startTime: string = '';
+  newUserEmail: string = '';
 
   users: User[] = [];
   selectAll = false;
@@ -161,5 +163,8 @@ export class PollCreateComponent implements OnInit {
   trackByIndex(index: number, item: string): number {
     return index;
   }
-  
+
+  addUserByEmail(){
+
+  }
 }
