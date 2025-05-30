@@ -92,7 +92,7 @@
           <div class="space-y-4">
             <div *ngFor="let poll of recentPolls"
                   class="bg-gray-700/50 p-4 rounded-lg border border-gray-600 hover:border-cyan-400 transition-all duration-300 cursor-pointer group"
-                  (click)="navigateTo('/vote')">
+                  (click)="navigateToPoll(poll)">
               <div class="flex items-start justify-between">
                 <div class="flex-1">
                   <h3 class="font-semibold text-white group-hover:text-cyan-400 transition-colors">{{ poll.title }}</h3>

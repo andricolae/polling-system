@@ -260,4 +260,12 @@ export class UserDashboardComponent implements OnInit, OnDestroy {
       this.streakDays.push({ active: isActive });
     }
   }
+
+  navigateToPoll(poll: UserPoll) {
+    if (poll.id) {
+      this.router.navigate(['/vote', poll.id]);
+    } else {
+      this.router.navigate(['/vote']);
+    }
+  }
 }

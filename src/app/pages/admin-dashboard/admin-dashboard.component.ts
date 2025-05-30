@@ -52,7 +52,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private pollService: PollService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadDashboardData();
@@ -244,5 +244,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   private getTimeAgo(index: number): string {
     const times = ['2 hours ago', '4 hours ago', '6 hours ago', '8 hours ago', '12 hours ago'];
     return times[index] || '1 day ago';
+  }
+
+  navigateToPoll(poll: DisplayPoll) {
+    if (poll.id) {
+      this.router.navigate(['/vote', poll.id]);
+    } else {
+      this.router.navigate(['/vote']);
+    }
   }
 }
