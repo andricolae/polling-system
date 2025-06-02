@@ -1,23 +1,154 @@
-<div
-    class="bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white min-h-screen flex items-center justify-center p-4">
-    <div class="text-center max-w-2xl animate-fade-in-up">
-        <img src="logo.png" alt="Logo" class="w-16 h-16 mx-auto mb-6" />
+<div class="bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white min-h-screen">
 
-        <h1
-            class="text-5xl md:text-6xl font-extrabold bg-clip-text text-cyan-400 mb-10">
-            Polling System
-        </h1>
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="text-center max-w-4xl animate-fade-in-up">
+            <img src="logo.png" alt="Logo" class="w-20 h-20 mx-auto mb-8 drop-shadow-lg" />
 
-        <p class="text-lg md:text-xl text-gray-300 mb-10 ">
-            A sleek new way to collect opinions, votes, and feedback – faster than ever.
-        </p>
-        <p class="text-lg md:text-xl text-gray-300 mb-10 px-4">
-            Manage polls, vote securely, and view live results.
-        </p>
+            <h1 class="text-6xl md:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 mb-6">
+                Chime-In
+            </h1>
 
-        <button (click)="goToLogin()"
-            class="inline-block bg-white text-black px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-2xl transition duration-300">
-            Log In
-        </button>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 font-light">
+                The future of polling is here
+            </p>
+
+            <p class="text-lg md:text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Create, distribute, and analyze polls with real-time results.
+                Secure authentication, beautiful analytics, and seamless user experience
+                powered by Angular and Firebase.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+                <button (click)="handleGetStarted()"
+                    class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    {{ (isAuthenticated$ | async) ? 'Go to Polls' : 'Get Started Free' }}
+                </button>
+                <button (click)="scrollToFeatures()"
+                    class="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300">
+                    Learn More
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-cyan-400">500+</div>
+                    <div class="text-gray-400">Polls Created</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-cyan-400">2.5K+</div>
+                    <div class="text-gray-400">Votes Cast</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-cyan-400">98%</div>
+                    <div class="text-gray-400">Uptime</div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="features" class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center text-cyan-400 mb-16">Why Choose Chime-In?</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Lightning Fast</h3>
+                    <p class="text-gray-400">Create and deploy polls in seconds. Real-time results with zero delays.</p>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Secure & Private</h3>
+                    <p class="text-gray-400">Enterprise-grade security with Firebase authentication and encrypted data.</p>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Beautiful Analytics</h3>
+                    <p class="text-gray-400">Stunning visualizations and detailed insights to understand your data.</p>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Team Collaboration</h3>
+                    <p class="text-gray-400">Role-based access control for seamless team management and collaboration.</p>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Mobile Responsive</h3>
+                    <p class="text-gray-400">Perfect experience across all devices - desktop, tablet, and mobile.</p>
+                </div>
+
+                <div class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl border border-gray-700 hover:border-cyan-400 transition-all duration-300 transform hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Real-time Updates</h3>
+                    <p class="text-gray-400">Watch results update live as votes come in, with instant notifications.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 px-4 bg-gray-900/50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold text-cyan-400 mb-16">How It Works</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="relative">
+                    <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">1</div>
+                    <h3 class="text-xl font-bold text-white mb-4">Create Your Poll</h3>
+                    <p class="text-gray-400">Design your questions, set options, and choose who can participate in just a few clicks.</p>
+                </div>
+
+                <div class="relative">
+                    <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">2</div>
+                    <h3 class="text-xl font-bold text-white mb-4">Share & Collect</h3>
+                    <p class="text-gray-400">Invite participants and watch as responses flow in with real-time notifications.</p>
+                </div>
+
+                <div class="relative">
+                    <div class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">3</div>
+                    <h3 class="text-xl font-bold text-white mb-4">Analyze Results</h3>
+                    <p class="text-gray-400">Get beautiful charts, insights, and export data for deeper analysis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="py-20 px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-4xl font-bold text-white mb-6">Ready to Get Started?</h2>
+            <p class="text-xl text-gray-400 mb-8">Join thousands of users who trust Chime-In for their polling needs.</p>
+            <button (click)="handleStartPolling()"
+                class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-12 py-4 rounded-full font-bold text-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                {{ (isAuthenticated$ | async) ? 'Browse Polls Now' : 'Start Polling Now' }}
+            </button>
+        </div>
+    </div>
+
 </div>
