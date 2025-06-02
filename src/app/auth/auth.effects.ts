@@ -8,6 +8,7 @@ import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { signup } from "./auth.actions";
 import { createUserWithEmailAndPassword } from "@angular/fire/auth";
+import { sendEmailVerification } from "firebase/auth";
 
 @Injectable()
 export class AuthEffects {
@@ -94,9 +95,12 @@ export class AuthEffects {
             const uid = userCredential.user.uid;
             const email = userCredential.user.email ?? '';
             const userRef = doc(this.firestore, `users/${uid}`);
-            return from(setDoc(userRef, { role: 'user', email })).pipe(
-              map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
-            );
+
+            return from(sendEmailVerification(userCredential.user)).pipe(
+              switchMap(() => from(setDoc(userRef, { role: 'user', email })).pipe(
+                map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
+              )));
+
           }),
           catchError(error => {
             const code = error.code || '';
