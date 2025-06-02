@@ -52,7 +52,6 @@ export class PieChartComponent implements OnChanges {
   ngOnChanges(): void {
     if (!this.series || !this.labels || this.series.length !== this.labels.length) return;
 
-    // zip, sort by votes descending, then unzip
     const combined = this.series.map((value, i) => ({
       label: this.labels[i],
       value
@@ -63,6 +62,5 @@ export class PieChartComponent implements OnChanges {
     this.chartLabels = sorted.map(item => item.label);
     this.chartSeries = sorted.map(item => item.value);
   }
-
 
 }
