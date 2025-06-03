@@ -30,6 +30,7 @@ export class PollCreateComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
   emailErrorMessage: string | null = null;
+  emailValidationMessages: string[] = [];
 
   constructor(
     private pollService: PollService,
@@ -88,36 +89,100 @@ export class PollCreateComponent implements OnInit {
     return this.pollService.formatEmail(email);
   }
 
+  // addUserByEmail() {
+  //   this.emailErrorMessage = null;
+
+  //   if (!this.newUserEmail.trim()) {
+  //     return;
+  //   }
+
+  //   const userExists = this.users.find(user =>
+  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+  //   );
+
+  //   if (!userExists) {
+  //     this.emailErrorMessage = 'User with this email does not exist. Please double-check the email address.';
+  //     return;
+  //   }
+
+  //   const alreadySelected = this.selectedUsers.find(user =>
+  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+  //   );
+
+  //   if (alreadySelected) {
+  //     alreadySelected.selected = true;
+  //   } else {
+  //     this.selectedUsers.push({ ...userExists, selected: true });
+  //   }
+
+  //   this.newUserEmail = '';
+
+  //   this.updateSelectAllState();
+  // }
+
   addUserByEmail() {
-    this.emailErrorMessage = null;
+  this.emailErrorMessage = null;
+  this.emailValidationMessages = [];
 
-    if (!this.newUserEmail.trim()) {
-      return;
-    }
+  if (!this.newUserEmail.trim()) {
+    return;
+  }
 
+  const emailList = this.newUserEmail.split(',')
+    .map(email => email.trim())
+    .filter(email => email !== '');
+
+  let addedCount = 0;
+  let alreadySelectedCount = 0;
+  const invalidEmails: string[] = [];
+
+  emailList.forEach(email => {
     const userExists = this.users.find(user =>
-      user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+      user.email.toLowerCase() === email.toLowerCase()
     );
 
     if (!userExists) {
-      this.emailErrorMessage = 'User with this email does not exist. Please double-check the email address.';
+      invalidEmails.push(email);
       return;
     }
 
     const alreadySelected = this.selectedUsers.find(user =>
-      user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+      user.email.toLowerCase() === email.toLowerCase()
     );
 
     if (alreadySelected) {
-      alreadySelected.selected = true;
+      if (!alreadySelected.selected) {
+        alreadySelected.selected = true;
+        addedCount++;
+      } else {
+        alreadySelectedCount++;
+      }
     } else {
       this.selectedUsers.push({ ...userExists, selected: true });
+      addedCount++;
     }
+  });
 
-    this.newUserEmail = '';
-
-    this.updateSelectAllState();
+  if (invalidEmails.length > 0) {
+    this.emailValidationMessages.push(`Invalid emails: ${invalidEmails.join(', ')}`);
   }
+
+  if (addedCount > 0) {
+    this.emailValidationMessages.push(`✓ Successfully added ${addedCount} user(s)`);
+  }
+
+  if (alreadySelectedCount > 0) {
+    this.emailValidationMessages.push(`${alreadySelectedCount} user(s) were already selected`);
+  }
+
+  this.newUserEmail = '';
+
+  this.updateSelectAllState();
+
+  setTimeout(() => {
+    this.emailValidationMessages = [];
+  }, 5000);
+}
 
   updateSelectAllState() {
     this.selectAll = this.users.length > 0 &&
