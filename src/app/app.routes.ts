@@ -17,6 +17,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/poll-vote/poll-vote.component')
       .then(m => m.PollVoteComponent),
     canActivate: [authGuard,emailVerifiedGuard] },
+    canActivate: [authGuard]
+  },
+  {
+    path: 'vote/:pollId',
+    loadComponent: () => import('./pages/poll-vote/poll-vote.component')
+      .then(m => m.PollVoteComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'create',
     loadComponent: () => import('./pages/poll-create/poll-create.component')
