@@ -1,7 +1,7 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Store } from '@ngrx/store';
-import { loginSuccess } from './auth.actions';
+import { initializeAuth, loginSuccess } from './auth.actions';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +16,7 @@ export class AuthInitializerService {
                 try {
                     const user = JSON.parse(savedUser);
                     if (user?.uid && user?.email) {
-                        this.store.dispatch(loginSuccess({ user }));
+                        this.store.dispatch(initializeAuth({ user }));
                     }
                 } catch (e) {
                     console.error('Eroare la citirea user-ului din localStorage', e);
