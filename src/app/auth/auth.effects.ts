@@ -194,8 +194,9 @@ export class AuthEffects {
             return from(getDoc(userRef)).pipe(
               map(userDoc => {
                 const role = userDoc.data()?.['role'] ?? 'user';
+                const emailVerified = userCredential.user.emailVerified;
                 return loginSuccess({
-                  user: { uid, email, role }
+                  user: { uid, email, role, emailVerified }
                 });
               })
             );
@@ -236,6 +237,9 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(loginSuccess), // Only actual login triggers redirect
       tap(({ user }) => {
+        if (!user.emailVerified){
+          return;
+        }
         switch (user.role) {
           case 'admin':
             this.router.navigate(['/admin-dashboard']);
@@ -263,7 +267,7 @@ export class AuthEffects {
 
             return from(sendEmailVerification(userCredential.user)).pipe(
               switchMap(() => from(setDoc(userRef, { role: 'user', email })).pipe(
-                map(() => loginSuccess({ user: { uid, email, role: 'user' } }))
+                map(() => loginSuccess({ user: { uid, email, role: 'user', emailVerified: false } }))
               )));
 
           }),

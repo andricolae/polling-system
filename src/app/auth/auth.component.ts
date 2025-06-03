@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { selectAuthLoading, selectAuthError } from './auth.selectors';
+import { selectAuthLoading, selectAuthError, selectAuthUser } from './auth.selectors';
 import { Store, select } from '@ngrx/store';
 import { login } from './auth.actions';
 import { RouterModule } from '@angular/router';
 import { AuthService } from './auth.service';
-import { signup, clearAuthError,loginFailure } from './auth.actions';
+import { signup, clearAuthError, loginFailure } from './auth.actions';
+import { User } from 'firebase/auth';
 
 @Component({
   selector: 'app-auth',
@@ -24,10 +25,19 @@ export class AuthComponent {
   isSignupMode = false;
   errorMessage$: Observable<string | null>;
   loading$: Observable<boolean>;
+  user$: Observable<{ uid: string; email: string; role: string; emailVerified?: boolean } | null>;
+  verificationMessage = '';
 
   constructor(private authService: AuthService, private store: Store) {
     this.errorMessage$ = this.store.pipe(select(selectAuthError));
     this.loading$ = this.store.select(selectAuthLoading);
+    this.user$ = this.store.select(selectAuthUser);
+
+    this.user$.subscribe(user => {
+      if (user && user.emailVerified === false) {
+        this.verificationMessage = 'A verification email was sent. Please check your inbox.';
+      }
+    });
   }
 
   login() {
