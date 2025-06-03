@@ -153,6 +153,7 @@ export class PollCreateComponent implements OnInit {
       description: this.description,
       answers: this.answerOptions.filter(opt => opt.trim() !== ''),
       deadline: new Date(this.deadline),
+      startTime: new Date(this.startTime),
       createdBy: this.pollService.getCurrentUserId() || '',
       isActive: true,
       realtime: this.resultTiming === 'after',
@@ -200,6 +201,11 @@ export class PollCreateComponent implements OnInit {
 
     if (!this.deadline) {
       this.errorMessage = 'Please set a deadline';
+      return false;
+    }
+
+    if (!this.startTime) {
+      this.errorMessage = 'Please set a starting time';
       return false;
     }
 
