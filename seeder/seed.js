@@ -168,11 +168,6 @@ async function seedDatabase() {
 
     const existingPolls = await pollsRef.limit(1).get();
 
-    // if (!existingPolls.empty) {
-    //   console.log('Your database already contains polls. Proceeding will add more polls.');
-    //   return console.log('Exiting without adding polls.');
-    // }
-
     for (const poll of SAMPLE_POLLS) {
       const newPollRef = pollsRef.doc();
       batch.set(newPollRef, poll);

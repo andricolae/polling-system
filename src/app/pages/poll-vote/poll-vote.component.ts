@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PollService, PollData } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PieChartComponent } from "../../components/pie-chart/pie-chart.component";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-poll-vote',
@@ -13,7 +14,7 @@ import { PieChartComponent } from "../../components/pie-chart/pie-chart.componen
   templateUrl: './poll-vote.component.html',
   styleUrl: './poll-vote.component.css'
 })
-export class PollVoteComponent implements OnInit {
+export class PollVoteComponent implements OnInit, OnDestroy {
   ongoingPolls: PollData[] = [];
   pastPolls: PollData[] = [];
   selectedPoll: PollData | null = null;
@@ -25,13 +26,64 @@ export class PollVoteComponent implements OnInit {
   successMessage: string | null = null;
 
   currentUserId: string | null = null;
+  private subscriptions: Subscription[] = [];
 
-  constructor(private pollService: PollService, private router: Router) { }
+  constructor(
+    private pollService: PollService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
-    this.currentUserId = this.pollService.getCurrentUserId();
-    this.loadPolls();
+    console.log('Vote component initializing...');
 
+    this.currentUserId = this.pollService.getCurrentUserId();
+    console.log('Current user ID from service:', this.currentUserId);
+
+    const savedUser = localStorage.getItem('user');
+    console.log('User in localStorage:', savedUser);
+
+    this.pollService.getCurrentUserId();
+    console.log('Auth state when vote component loads');
+
+    this.loadPolls();
+    this.checkForDirectPollAccess();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private checkForDirectPollAccess() {
+    const routeSub = this.route.params.subscribe(params => {
+      const pollId = params['pollId'];
+      if (pollId) {
+        console.log('Direct poll access requested for ID:', pollId);
+        setTimeout(() => {
+          this.openPollById(pollId);
+        }, 1000);
+      }
+    });
+    this.subscriptions.push(routeSub);
+  }
+
+  private openPollById(pollId: string) {
+    let poll = this.ongoingPolls.find(p => p.id === pollId);
+
+    if (!poll) {
+      poll = this.pastPolls.find(p => p.id === pollId);
+    }
+
+    if (poll) {
+      console.log('Found poll to open:', poll);
+      this.openPoll(poll);
+
+    } else {
+      console.warn('Poll not found with ID:', pollId);
+      setTimeout(() => {
+        this.openPollById(pollId);
+      }, 500);
+    }
   }
 
   navigateTo(path: string) {
@@ -42,7 +94,7 @@ export class PollVoteComponent implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    this.pollService.getActivePolls().subscribe({
+    const activePollsSub = this.pollService.getActivePolls().subscribe({
       next: (polls) => {
         this.ongoingPolls = this.filterPollsForCurrentUser(polls);
         console.log('Active polls loaded for current user:', this.ongoingPolls.length);
@@ -55,7 +107,7 @@ export class PollVoteComponent implements OnInit {
       }
     });
 
-    this.pollService.getPastPolls().subscribe({
+    const pastPollsSub = this.pollService.getPastPolls().subscribe({
       next: (polls) => {
         this.pastPolls = this.filterPollsForCurrentUser(polls);
         console.log('Past polls loaded for current user:', this.pastPolls.length);
@@ -65,6 +117,8 @@ export class PollVoteComponent implements OnInit {
         this.errorMessage = 'Could not load past polls';
       }
     });
+
+    this.subscriptions.push(activePollsSub, pastPollsSub);
   }
 
   private filterPollsForCurrentUser(polls: PollData[]): PollData[] {
@@ -90,6 +144,8 @@ export class PollVoteComponent implements OnInit {
     } else {
       this.hasVoted = true;
     }
+
+    console.log('Opened poll:', poll.title, 'Has voted:', this.hasVoted);
   }
 
   closeModal() {
@@ -98,6 +154,8 @@ export class PollVoteComponent implements OnInit {
     this.hasVoted = false;
     this.errorMessage = null;
     this.successMessage = null;
+
+    this.router.navigate(['/vote'], { replaceUrl: true });
   }
 
   submitVote() {
@@ -134,7 +192,7 @@ export class PollVoteComponent implements OnInit {
       return;
     }
 
-    this.pollService.submitVote(pollId, answerIndex).subscribe({
+    const voteSub = this.pollService.submitVote(pollId, answerIndex).subscribe({
       next: (success) => {
         this.loading = false;
 
@@ -165,6 +223,8 @@ export class PollVoteComponent implements OnInit {
         this.errorMessage = 'Failed to submit vote. Please try again.';
       }
     });
+
+    this.subscriptions.push(voteSub);
   }
 
   totalVotes(): number {
@@ -186,5 +246,4 @@ export class PollVoteComponent implements OnInit {
   get chartLabels(): string[] {
     return this.selectedPoll?.answers ?? [];
   }
-
 }

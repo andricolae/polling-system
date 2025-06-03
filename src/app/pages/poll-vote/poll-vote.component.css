@@ -1,0 +1,76 @@
+.custom-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #06b6d4 #374151;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #06b6d4;
+    border-radius: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #0891b2;
+}
+
+.modal-overlay {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.progress-bar {
+    transition: width 0.8s ease-in-out;
+}
+
+.vote-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.vote-button:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.vote-button:not(:disabled):active {
+    transform: translateY(0);
+}
+
+input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #06b6d4;
+}
+
+.close-button:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    transform: scale(1.1);
+}

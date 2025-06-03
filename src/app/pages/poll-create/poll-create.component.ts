@@ -19,18 +19,23 @@ export class PollCreateComponent implements OnInit {
   maxOptions = 5;
   resultTiming: 'end' | 'after' = 'end';
   deadline: string = '';
+  startTime: string = '';
+  newUserEmail: string = '';
 
   users: User[] = [];
+  selectedUsers: User[] = [];
   selectAll = false;
 
   loading = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  emailErrorMessage: string | null = null;
+  emailValidationMessages: string[] = [];
 
   constructor(
     private pollService: PollService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadUsers();
@@ -50,7 +55,18 @@ export class PollCreateComponent implements OnInit {
   }
 
   toggleAll() {
-    this.users.forEach(user => user.selected = this.selectAll);
+    if (this.selectAll) {
+      this.users.forEach(user => {
+        const existingUser = this.selectedUsers.find(selected => selected.uid === user.uid);
+        if (!existingUser) {
+          this.selectedUsers.push({ ...user, selected: true });
+        } else {
+          existingUser.selected = true;
+        }
+      });
+    } else {
+      this.selectedUsers = [];
+    }
   }
 
   addOption() {
@@ -73,6 +89,115 @@ export class PollCreateComponent implements OnInit {
     return this.pollService.formatEmail(email);
   }
 
+  // addUserByEmail() {
+  //   this.emailErrorMessage = null;
+
+  //   if (!this.newUserEmail.trim()) {
+  //     return;
+  //   }
+
+  //   const userExists = this.users.find(user =>
+  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+  //   );
+
+  //   if (!userExists) {
+  //     this.emailErrorMessage = 'User with this email does not exist. Please double-check the email address.';
+  //     return;
+  //   }
+
+  //   const alreadySelected = this.selectedUsers.find(user =>
+  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
+  //   );
+
+  //   if (alreadySelected) {
+  //     alreadySelected.selected = true;
+  //   } else {
+  //     this.selectedUsers.push({ ...userExists, selected: true });
+  //   }
+
+  //   this.newUserEmail = '';
+
+  //   this.updateSelectAllState();
+  // }
+
+  addUserByEmail() {
+  this.emailErrorMessage = null;
+  this.emailValidationMessages = [];
+
+  if (!this.newUserEmail.trim()) {
+    return;
+  }
+
+  const emailList = this.newUserEmail.split(',')
+    .map(email => email.trim())
+    .filter(email => email !== '');
+
+  let addedCount = 0;
+  let alreadySelectedCount = 0;
+  const invalidEmails: string[] = [];
+
+  emailList.forEach(email => {
+    const userExists = this.users.find(user =>
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+
+    if (!userExists) {
+      invalidEmails.push(email);
+      return;
+    }
+
+    const alreadySelected = this.selectedUsers.find(user =>
+      user.email.toLowerCase() === email.toLowerCase()
+    );
+
+    if (alreadySelected) {
+      if (!alreadySelected.selected) {
+        alreadySelected.selected = true;
+        addedCount++;
+      } else {
+        alreadySelectedCount++;
+      }
+    } else {
+      this.selectedUsers.push({ ...userExists, selected: true });
+      addedCount++;
+    }
+  });
+
+  if (invalidEmails.length > 0) {
+    this.emailValidationMessages.push(`Invalid emails: ${invalidEmails.join(', ')}`);
+  }
+
+  if (addedCount > 0) {
+    this.emailValidationMessages.push(`✓ Successfully added ${addedCount} user(s)`);
+  }
+
+  if (alreadySelectedCount > 0) {
+    this.emailValidationMessages.push(`${alreadySelectedCount} user(s) were already selected`);
+  }
+
+  this.newUserEmail = '';
+
+  this.updateSelectAllState();
+
+  setTimeout(() => {
+    this.emailValidationMessages = [];
+  }, 5000);
+}
+
+  updateSelectAllState() {
+    this.selectAll = this.users.length > 0 &&
+      this.users.every(user =>
+        this.selectedUsers.some(selected =>
+          selected.uid === user.uid && selected.selected
+        )
+      );
+  }
+
+  onUserSelectionChange() {
+    this.selectedUsers = this.selectedUsers.filter(user => user.selected);
+    this.updateSelectAllState();
+  }
+
   createPoll() {
     console.log('createPoll method called');
 
@@ -83,7 +208,7 @@ export class PollCreateComponent implements OnInit {
     this.loading = true;
     console.log('Form validated, creating poll...');
 
-    const selectedVoters = this.users
+    const selectedVoters = this.selectedUsers
       .filter(user => user.selected)
       .map(user => user.uid);
 
@@ -149,12 +274,20 @@ export class PollCreateComponent implements OnInit {
       return false;
     }
 
-    const hasVoters = this.users.some(user => user.selected);
+    const hasVoters = this.selectedUsers.some(user => user.selected);
     if (!hasVoters) {
       this.errorMessage = 'Please select at least one voter';
       return false;
     }
 
     return true;
+  }
+
+  trackByIndex(index: number, item: string): number {
+    return index;
+  }
+
+  trackByUid(index: number, user: User): string {
+    return user.uid;
   }
 }
