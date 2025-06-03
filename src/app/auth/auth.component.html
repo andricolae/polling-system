@@ -49,6 +49,10 @@
       {{ error }}
     </div>
 
+    <div *ngIf="verificationMessage" class="text-red-500 text-sm mt-2 text-center">
+      {{ verificationMessage }}
+    </div>
+
     <!-- Email -->
     <div>
       <label for="signupEmail" class="block text-sm font-medium mb-1 text-gray-300">Email</label>
