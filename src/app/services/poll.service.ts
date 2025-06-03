@@ -25,6 +25,7 @@ export interface PollData {
   answers: string[];
   created: any;
   deadline: Date;
+  startTime: Date;
   createdBy: string;
   isActive: boolean;
   realtime: boolean;
@@ -205,6 +206,16 @@ export class PollService {
       deadline = new Date();
     }
 
+    let startTime = data['startTime'];
+    if (startTime && typeof startTime.toDate === 'function') {
+      startTime = startTime.toDate();
+    } else if (startTime && typeof startTime === 'string') {
+      startTime = new Date(startTime);
+    } else {
+      // fallback
+      startTime = created ?? new Date();
+    }
+
     const pollData: PollData = {
       id: id,
       title: data['title'] || '',
@@ -213,6 +224,7 @@ export class PollService {
       answers: data['answers'] || [],
       created: created,
       deadline: deadline,
+      startTime: startTime,
       createdBy: data['createdBy'] || '',
       isActive: data['isActive'] === true,
       realtime: data['realtime'] === true,

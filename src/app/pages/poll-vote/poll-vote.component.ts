@@ -118,9 +118,11 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       return [];
     }
 
+    const now = new Date();
+
     return polls.filter(poll =>
-      poll.voters &&
-      poll.voters.includes(this.currentUserId!)
+      poll.voters?.includes(this.currentUserId!) &&
+      poll.startTime <= now
     );
   }
 
