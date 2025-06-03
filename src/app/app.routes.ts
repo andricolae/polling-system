@@ -7,28 +7,35 @@ import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
 
 export const routes: Routes = [
-  { path: 'login', component: AuthComponent },
-  { path: 'admin-dashboard', component: AdminDashboardComponent },
-  { path: 'user-dashboard', component: UserDashboardComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
+  { path: 'login', component: AuthComponent },
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'user-dashboard',
+    component: UserDashboardComponent,
+    canActivate: [authGuard, emailVerifiedGuard]
+  },
   {
     path: 'vote',
-    loadComponent: () => import('./pages/poll-vote/poll-vote.component')
-      .then(m => m.PollVoteComponent),
-    canActivate: [authGuard,emailVerifiedGuard] },
-    canActivate: [authGuard]
+    loadComponent: () =>
+      import('./pages/poll-vote/poll-vote.component').then(m => m.PollVoteComponent),
+    canActivate: [authGuard, emailVerifiedGuard]
   },
   {
     path: 'vote/:pollId',
-    loadComponent: () => import('./pages/poll-vote/poll-vote.component')
-      .then(m => m.PollVoteComponent),
-    canActivate: [authGuard]
+    loadComponent: () =>
+      import('./pages/poll-vote/poll-vote.component').then(m => m.PollVoteComponent),
+    canActivate: [authGuard, emailVerifiedGuard]
   },
   {
     path: 'create',
-    loadComponent: () => import('./pages/poll-create/poll-create.component')
-      .then(m => m.PollCreateComponent),
-    canActivate: [adminGuard]
-  },
+    loadComponent: () =>
+      import('./pages/poll-create/poll-create.component').then(m => m.PollCreateComponent),
+    canActivate: [authGuard, adminGuard]
+  }
 ];
