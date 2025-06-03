@@ -110,7 +110,7 @@
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-gray-300">Add User by Email</label>
                             <div class="flex gap-2">
-                                <input type="email" [(ngModel)]="newUserEmail" placeholder="user@example.com"
+                                <input type="email" [(ngModel)]="newUserEmail" placeholder="one or more, separated by comma"
                                     class="flex-1 p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" />
                                 <button type="button" (click)="addUserByEmail()" [disabled]="!newUserEmail"
                                     class="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition duration-200">
@@ -120,11 +120,16 @@
                                 </button>
                             </div>
 
-                            @if (emailErrorMessage) {
-                            <div class="bg-red-700 text-white p-3 rounded-lg text-sm">
-                                {{ emailErrorMessage }}
+                          @if (emailValidationMessages.length > 0) {
+                            <div class="space-y-2">
+                                @for (message of emailValidationMessages; track $index) {
+                                <div class="p-3 rounded-lg text-sm"
+                                    [class]="message.includes('Invalid') ? 'bg-red-700 text-white' : message.includes('✓') ? 'bg-green-700 text-white' : 'bg-yellow-700 text-white'">
+                                    {{ message }}
+                                </div>
+                                }
                             </div>
-                            }
+                          }
                         </div>
 
                         @if (selectedUsers.length === 0) {
