@@ -5,9 +5,11 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ssr": "ng build --configuration production",
+    "serve:ssr": "node dist/polling-system/server/server.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:polling-system": "node dist/polling-system/server/server.mjs"
+    "vercel-build": "ng build --configuration production"
   },
   "private": true,
   "dependencies": {

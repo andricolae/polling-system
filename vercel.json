@@ -1,19 +1,23 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "dist/polling-system/server/server.mjs",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
     }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)\\.(js|css|png|jpg|jpeg|gif|ico|svg)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "dist/polling-system/server/server.mjs"
     }
-  ]
+  ],
+  "functions": {
+    "dist/polling-system/server/server.mjs": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
