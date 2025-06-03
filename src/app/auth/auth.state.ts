@@ -1,5 +1,5 @@
 export interface AuthState {
-    user: { uid: string; email: string; role: string } | null;
+    user: { uid: string; email: string; role: string, emailVerified: boolean } | null;
     loading: boolean;
     error: string | null;
     isAuthenticated: boolean;

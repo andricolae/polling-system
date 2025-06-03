@@ -35,9 +35,18 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.currentUserId = this.pollService.getCurrentUserId();
-    this.loadPolls();
+    console.log('Vote component initializing...');
 
+    this.currentUserId = this.pollService.getCurrentUserId();
+    console.log('Current user ID from service:', this.currentUserId);
+
+    const savedUser = localStorage.getItem('user');
+    console.log('User in localStorage:', savedUser);
+
+    this.pollService.getCurrentUserId();
+    console.log('Auth state when vote component loads');
+
+    this.loadPolls();
     this.checkForDirectPollAccess();
   }
 

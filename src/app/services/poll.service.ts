@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -17,6 +17,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, from, map, catchError, of, switchMap } from 'rxjs';
 import { Auth } from '@angular/fire/auth';
+import { isPlatformBrowser } from '@angular/common';
 export interface PollData {
   id?: string;
   title: string;
@@ -45,6 +46,7 @@ export interface User {
 export class PollService {
   private firestore = inject(Firestore);
   private auth = inject(Auth);
+  private platformId = inject(PLATFORM_ID);
 
   createPoll(pollData: Omit<PollData, 'created' | 'results' | 'voted' | 'id'>): Observable<string> {
     const pollsRef = collection(this.firestore, 'polls');
@@ -86,7 +88,24 @@ export class PollService {
   }
 
   getCurrentUserId(): string | null {
-    return this.auth.currentUser?.uid || null;
+    if (this.auth.currentUser?.uid) {
+      return this.auth.currentUser.uid;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          return user?.uid || null;
+        } catch (e) {
+          console.error('Error parsing user from localStorage:', e);
+          return null;
+        }
+      }
+    }
+
+    return null;
   }
 
   formatEmail(email: string): string {
