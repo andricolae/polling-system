@@ -26,6 +26,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   successMessage: string | null = null;
 
   currentUserId: string | null = null;
+  isAdmin: boolean = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -41,6 +42,11 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     console.log('Current user ID from service:', this.currentUserId);
 
     const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      this.isAdmin = parsedUser?.role === 'admin';
+    }
+
     console.log('User in localStorage:', savedUser);
 
     this.pollService.getCurrentUserId();
@@ -77,7 +83,6 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     if (poll) {
       console.log('Found poll to open:', poll);
       this.openPoll(poll);
-
     } else {
       console.warn('Poll not found with ID:', pollId);
       setTimeout(() => {
@@ -96,8 +101,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
 
     const activePollsSub = this.pollService.getActivePolls().subscribe({
       next: (polls) => {
-        this.ongoingPolls = this.filterPollsForCurrentUser(polls);
-        console.log('Active polls loaded for current user:', this.ongoingPolls.length);
+        this.ongoingPolls = this.isAdmin ? polls : this.filterPollsForCurrentUser(polls);
+        console.log('Active polls loaded:', this.ongoingPolls.length);
         this.loading = false;
       },
       error: (error) => {
@@ -109,8 +114,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
 
     const pastPollsSub = this.pollService.getPastPolls().subscribe({
       next: (polls) => {
-        this.pastPolls = this.filterPollsForCurrentUser(polls);
-        console.log('Past polls loaded for current user:', this.pastPolls.length);
+        this.pastPolls = this.isAdmin ? polls : this.filterPollsForCurrentUser(polls);
+        console.log('Past polls loaded:', this.pastPolls.length);
       },
       error: (error) => {
         console.error('Error loading past polls:', error);
@@ -142,7 +147,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     this.successMessage = null;
 
     if (poll.isActive) {
-      this.hasVoted = !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
+      this.hasVoted = this.isAdmin || !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
     } else {
       this.hasVoted = true;
     }
@@ -161,6 +166,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   }
 
   submitVote() {
+    if (this.isAdmin) return;
+
     if (!this.selectedPoll || !this.selectedAnswer) {
       this.errorMessage = 'Please select an answer';
       return;
@@ -238,7 +245,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   }
 
   hasUserVoted(poll: PollData): boolean {
-    return !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
+    return this.isAdmin || !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
   }
 
   get chartSeries(): number[] {
