@@ -34,8 +34,10 @@ export class AuthComponent {
     this.user$ = this.store.select(selectAuthUser);
 
     this.user$.subscribe(user => {
-      if (user && user.emailVerified === false) {
+      if (this.isSignupMode && user === null) {
         this.verificationMessage = 'A verification email was sent. Please check your inbox.';
+      } else {
+        this.verificationMessage = '';
       }
     });
   }

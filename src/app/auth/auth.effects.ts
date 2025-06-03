@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { logout, logoutSuccess, login, loginSuccess, loginFailure, clearAuthError } from './auth.actions';
+import { logout, logoutSuccess, login, loginSuccess, loginFailure, clearAuthError, signupVerificationSent } from './auth.actions';
 import { exhaustMap, switchMap, map, catchError, tap, delay } from 'rxjs/operators';
 import { of, from } from 'rxjs';
 import { Auth, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
@@ -26,6 +26,9 @@ export class AuthEffects {
             const uid = userCredential.user.uid;
             const email = userCredential.user.email ?? '';
             const userRef = doc(this.firestore, `users/${uid}`);
+            if (!userCredential.user.emailVerified) {
+              return of(loginFailure({ error: 'Please verify your email before continuing.' }));
+            }
 
             return from(getDoc(userRef)).pipe(
               map(userDoc => {
@@ -72,7 +75,7 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(loginSuccess),
       tap(({ user }) => {
-        if (!user.emailVerified){
+        if (!user.emailVerified) {
           return;
         }
         switch (user.role) {
@@ -102,7 +105,7 @@ export class AuthEffects {
 
             return from(sendEmailVerification(userCredential.user)).pipe(
               switchMap(() => from(setDoc(userRef, { role: 'user', email })).pipe(
-                map(() => loginSuccess({ user: { uid, email, role: 'user', emailVerified: false } }))
+                map(() => signupVerificationSent({ email }))
               )));
 
           }),
@@ -159,7 +162,9 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(loginSuccess),
         tap(({ user }) => {
-          localStorage.setItem('user', JSON.stringify(user));
+          if (user.emailVerified) {
+            localStorage.setItem('user', JSON.stringify(user));
+          }
         })
       ),
     { dispatch: false }
