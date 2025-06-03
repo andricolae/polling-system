@@ -102,12 +102,12 @@
                     </h2>
 
                     <div class="space-y-4">
-                        <div class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg">
+                        <label class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition duration-200">
                             <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()" class="accent-cyan-500" />
-                            <label class="text-sm font-medium">Select All Users</label>
-                        </div>
+                            <span class="text-sm font-medium">Select All Users</span>
+                        </label>
 
-                        <!-- <div class="space-y-2">
+                        <div class="space-y-2">
                             <label class="block text-sm font-semibold text-gray-300">Add User by Email</label>
                             <div class="flex gap-2">
                                 <input type="email" [(ngModel)]="newUserEmail" placeholder="user@example.com"
@@ -119,19 +119,25 @@
                                     </svg>
                                 </button>
                             </div>
-                        </div> -->
 
-                        @if (users.length === 0) {
+                            @if (emailErrorMessage) {
+                            <div class="bg-red-700 text-white p-3 rounded-lg text-sm">
+                                {{ emailErrorMessage }}
+                            </div>
+                            }
+                        </div>
+
+                        @if (selectedUsers.length === 0) {
                         <div class="text-gray-400 italic text-sm text-center py-4">
-                            Loading users...
+                            No users selected yet. Add users by email or select all users.
                         </div>
                         }
 
-                        @if (users.length > 0) {
+                        @if (selectedUsers.length > 0) {
                         <div class="max-h-48 overflow-y-auto space-y-2 pr-2">
-                            @for (user of users; track user.uid) {
+                            @for (user of selectedUsers; track trackByUid($index, user)) {
                             <label class="flex items-center gap-3 text-sm cursor-pointer p-2 rounded hover:bg-gray-700/30 transition duration-200">
-                                <input type="checkbox" [(ngModel)]="user.selected" class="accent-cyan-500" />
+                                <input type="checkbox" [(ngModel)]="user.selected" (change)="onUserSelectionChange()" class="accent-cyan-500" />
                                 <span>{{ getUsernameFromEmail(user.email) }} ({{ user.email }})</span>
                             </label>
                             }
@@ -171,11 +177,11 @@
                             </div>
                         </div>
 
-                        <!-- <div>
+                        <div>
                             <label class="block text-sm font-semibold mb-2 text-gray-300">Start Time</label>
                             <input type="datetime-local" [(ngModel)]="startTime"
                                 class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" />
-                        </div> -->
+                        </div>
 
                         <div>
                             <label class="block text-sm font-semibold mb-2 text-gray-300">Deadline *</label>
