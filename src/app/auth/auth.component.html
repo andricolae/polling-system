@@ -44,8 +44,8 @@
     </div>
 
 
-    <div *ngIf="verificationMessage" class="text-red-500 text-sm mt-2 text-center">
-      {{ verificationMessage }}
+    <div *ngIf="verificationSent$ | async" class="text-green-500 text-sm mt-2 text-center">
+      A verification email was sent. Please check your inbox.
     </div>
 
     <!-- Email -->

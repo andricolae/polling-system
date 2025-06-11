@@ -29,11 +29,12 @@ export const authReducer = createReducer(
     isAuthenticated: false,
     user: null
   })),
-  on(clearAuthError, state => ({ ...state, error: null })),
-  on(signupVerificationSent, (state, { email }) => ({
+  on(signupVerificationSent, (state) => ({
     ...state,
+    verificationSent: true,
     user: null,
     isAuthenticated: false,
     loading: false
-  }))
+  })),
+  on(clearAuthError, state => ({ ...state, error: null, verificationSent: false })),
 );
