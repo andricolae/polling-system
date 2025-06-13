@@ -46,6 +46,133 @@
         </div>
     </div>
 
+    <div class="py-20 px-4 bg-gray-900/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-cyan-400 mb-4">Explore Public Polls</h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Discover what others are asking and share your voice in the community
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                <div class="bg-gray-800/40 backdrop-blur-sm p-8 rounded-2xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Latest Polls</h3>
+                        </div>
+                        <span class="text-sm text-cyan-400 font-medium">Recently Created</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        @for (poll of latestPublicPolls; track poll.id) {
+                        <div class="group bg-gray-700/50 hover:bg-gray-700/70 p-6 rounded-xl border border-gray-600 hover:border-cyan-400 transition-all duration-300 cursor-pointer"
+                              (click)="navigateToPoll(poll)">
+                            <div class="flex justify-between items-start mb-3">
+                                <h4 class="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg leading-tight">
+                                    {{ poll.title }}
+                                </h4>
+                                <span [ngClass]="getStatusColor(poll)"
+                                      class="px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-3">
+                                    {{ getStatusText(poll) }}
+                                </span>
+                            </div>
+                            <p class="text-gray-300 text-sm mb-4 line-clamp-2">{{ poll.question }}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-400">
+                                <span>{{ getTotalVotes(poll) }} votes</span>
+                                <span>{{ getTimeAgo(poll.created) }}</span>
+                            </div>
+                        </div>
+                        }
+
+                        @if (latestPublicPolls.length === 0 && !loading) {
+                        <div class="text-center py-8 text-gray-400">
+                            <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <p class="text-lg font-medium">No recent polls available</p>
+                            <p class="text-sm">Check back later for new content!</p>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/40 backdrop-blur-sm p-8 rounded-2xl border border-gray-700">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white">Most Popular</h3>
+                        </div>
+                        <span class="text-sm text-purple-400 font-medium">Trending Now</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        @for (poll of popularPublicPolls; track poll.id; let i = $index) {
+                        <div class="group bg-gray-700/50 hover:bg-gray-700/70 p-6 rounded-xl border border-gray-600 hover:border-purple-400 transition-all duration-300 cursor-pointer"
+                              (click)="navigateToPoll(poll)">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                    {{ i + 1 }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-bold text-white group-hover:text-purple-400 transition-colors text-lg leading-tight">
+                                            {{ poll.title }}
+                                        </h4>
+                                        <span [ngClass]="getStatusColor(poll)"
+                                              class="px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-3">
+                                            {{ getStatusText(poll) }}
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-4 line-clamp-2">{{ poll.question }}</p>
+                                    <div class="flex justify-between items-center text-xs text-gray-400">
+                                        <span class="font-medium text-purple-400">{{ getTotalVotes(poll) }} votes</span>
+                                        <span>{{ getTimeAgo(poll.created) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        }
+
+                        @if (popularPublicPolls.length === 0 && !loading) {
+                        <div class="text-center py-8 text-gray-400">
+                            <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            <p class="text-lg font-medium">No popular polls yet</p>
+                            <p class="text-sm">Be the first to vote!</p>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button (click)="navigateToAllPolls()"
+                    class="group bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    <span class="flex items-center justify-center gap-3">
+                        <svg class="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Explore All Public Polls
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="features" class="py-20 px-4">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-4xl font-bold text-center text-cyan-400 mb-16">Why Choose Chime-In?</h2>
