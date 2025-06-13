@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { selectAuthLoading, selectAuthError, selectAuthUser } from './auth.selectors';
+import { selectAuthLoading, selectAuthError, selectAuthUser, selectVerificationMessage } from './auth.selectors';
 import { Store, select } from '@ngrx/store';
 import { login } from './auth.actions';
 import { RouterModule } from '@angular/router';
@@ -27,11 +27,13 @@ export class AuthComponent {
   loading$: Observable<boolean>;
   user$: Observable<{ uid: string; email: string; role: string; emailVerified?: boolean } | null>;
   verificationMessage = '';
+  verificationSent$: Observable<boolean>;
 
   constructor(private authService: AuthService, private store: Store) {
     this.errorMessage$ = this.store.pipe(select(selectAuthError));
     this.loading$ = this.store.select(selectAuthLoading);
     this.user$ = this.store.select(selectAuthUser);
+    this.verificationSent$ = this.store.select(selectVerificationMessage);
 
     this.user$.subscribe(user => {
       if (this.isSignupMode && user === null) {
