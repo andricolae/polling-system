@@ -30,6 +30,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAllPublicPolls();
+    this.onFilterChange('active')
   }
 
   ngOnDestroy() {
