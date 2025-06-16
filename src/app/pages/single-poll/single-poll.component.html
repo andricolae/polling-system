@@ -11,11 +11,6 @@
       {{ errorMessage }}
     </div>
 
-    <!-- Invalid / Missing Poll
-    <div *ngIf="!loading && !selectedPoll && !errorMessage" class="text-center text-gray-300">
-      Poll not found.
-    </div> -->
-
     <!-- Poll Content -->
     <div *ngIf="!loading && selectedPoll" class="bg-gray-800 p-6 rounded-lg shadow-lg space-y-6">
 
@@ -26,46 +21,51 @@
         <p class="mt-2 text-lg">{{ selectedPoll.question }}</p>
       </div>
 
-      <!-- Status / Vote Info -->
-      <div class="space-y-2">
-        <div *ngIf="!selectedPoll.isActive" class="text-yellow-400 bg-yellow-900 p-3 rounded text-center">
-          The poll has ended.
+      <!-- Status Messages -->
+      <div class="space-y-3">
+        <!-- Not started -->
+        <div *ngIf="selectedPoll.isActive && !hasPollStarted()" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+          This poll hasn't started yet. Please check back after
+          <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
         </div>
 
-        <div *ngIf="selectedPoll.isActive && selectedPoll.realtime" class="text-green-400 bg-green-900 p-3 rounded text-center">
-          Realtime results enabled.
+        <!-- Already voted, realtime false -->
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+          You already voted. Results will be available on:
+          <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
         </div>
 
-        <div *ngIf="selectedPoll.isActive && !selectedPoll.realtime" class="text-blue-300 bg-blue-900 p-3 rounded text-center">
-          Results will be available on: <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
+        <!-- Already voted, realtime true -->
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && selectedPoll.realtime" class="bg-cyan-900 text-cyan-300 p-4 rounded text-center">
+          You already voted, here are the results.
+        </div>
+
+        <!-- Poll ended -->
+        <div *ngIf="!selectedPoll.isActive" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+          The poll has ended. Here are the results.
         </div>
       </div>
 
-      <!-- Voting Options -->
-      <div *ngIf="selectedPoll.isActive && !hasVoted">
+      <!-- Vote Form -->
+      <div *ngIf="selectedPoll.isActive && hasPollStarted() && !hasVoted">
         <h3 class="text-lg font-semibold text-cyan-300">Choose an answer:</h3>
         <form class="space-y-3">
-          <label *ngFor="let answer of selectedPoll.answers; let i = index"
+          <label *ngFor="let answer of selectedPoll.answers"
                  class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600">
             <input type="radio" [value]="answer" name="answer" class="mr-2 accent-cyan-500"
                    [(ngModel)]="selectedAnswer" />
             {{ answer }}
           </label>
         </form>
-        <button (click)="submitVote()" 
+        <button (click)="submitVote()"
                 [disabled]="!selectedAnswer || loading"
                 class="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-6 rounded shadow transition">
           Submit Vote
         </button>
       </div>
 
-      <!-- Already Voted Message -->
-      <div *ngIf="hasVoted && selectedPoll.isActive && !selectedPoll.realtime" class="text-yellow-300 bg-yellow-900 p-3 rounded text-center">
-        You already voted. Results will be available on: <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
-      </div>
-
       <!-- Results -->
-      <div *ngIf="!selectedPoll.isActive || (hasVoted && selectedPoll.realtime)" class="pt-4">
+      <div *ngIf="!selectedPoll.isActive || (selectedPoll.realtime && hasVoted)" class="pt-4">
         <h3 class="text-lg font-semibold text-cyan-300 mb-3">Results</h3>
 
         <div *ngFor="let answer of selectedPoll.answers; let i = index" class="mb-4">
@@ -75,8 +75,9 @@
           </div>
           <div class="w-full bg-gray-700 h-3 rounded overflow-hidden">
             <!-- <div class="bg-cyan-500 h-full transition-all duration-300"
-                 {{ (totalVotes() > 0) ? (+selectedPoll.results[i] / totalVotes() * 100) | number:'1.1-1' : 0 }}%></div>
-          </div> -->
+                 [style.width.%]="(totalVotes() > 0) ? (parseInt(selectedPoll.results[i]) / totalVotes() * 100) : 0">
+            </div> -->
+          </div>
         </div>
 
         <p class="text-sm text-gray-300 mt-2">Total votes: {{ totalVotes() }}</p>
@@ -85,4 +86,3 @@
     </div>
   </div>
 </div>
-
