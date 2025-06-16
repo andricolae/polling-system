@@ -33,4 +33,8 @@ export const serverRoutes: ServerRoute[] = [
     path: 'user-dashboard',
     renderMode: RenderMode.Client
   },
+  {
+    path: '404',
+    renderMode: RenderMode.Client
+  },
 ];

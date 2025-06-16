@@ -40,8 +40,8 @@ export const routes: Routes = [
       import('./pages/poll-create/poll-create.component').then(m => m.PollCreateComponent),
     canActivate: [authGuard, adminGuard]
   },
-  // {
-  //   path: '404',
-  //   component: NotFoundComponent
-  // }
+  {
+    path: '404',
+    component: NotFoundComponent
+  }
 ];
