@@ -70,4 +70,16 @@ export class SinglePollComponent implements OnInit {
   totalVotes(): number {
     return this.selectedPoll?.results?.reduce((sum, val) => sum + parseInt(val || '0'), 0) || 0;
   }
+
+  hasPollStarted(): boolean {
+    return !!this.selectedPoll && new Date() >= new Date(this.selectedPoll.startTime);
+  }
+
+  isPollExpired(): boolean {
+    return !!this.selectedPoll && new Date() > new Date(this.selectedPoll.deadline);
+  }
+
+  showResults(): boolean {
+    return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
+  }
 }
