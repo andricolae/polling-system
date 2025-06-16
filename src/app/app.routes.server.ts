@@ -7,11 +7,15 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'home',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Client
   },
   {
     path: 'login',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'all-polls',
+    renderMode: RenderMode.Client
   },
   {
     path: 'vote/:pollId',

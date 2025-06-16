@@ -5,6 +5,7 @@ import { adminGuard } from './guards/admin.guard';
 import { authGuard, emailVerifiedGuard } from './guards/auth.guard';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
+import { AllPollsComponent } from './pages/all-polls/all-polls.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -20,6 +21,11 @@ export const routes: Routes = [
     path: 'user-dashboard',
     component: UserDashboardComponent,
     canActivate: [authGuard, emailVerifiedGuard]
+  },
+  {
+    path: 'all-polls',
+    component: AllPollsComponent,
+    canActivate: []
   },
   {
     path: 'vote',
