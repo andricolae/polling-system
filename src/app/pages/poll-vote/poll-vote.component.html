@@ -174,7 +174,14 @@
                 }
                 }
 
-                @if (hasVoted || !selectedPoll.isActive) {
+                @if(hasVoted&&selectedPoll.isActive&&!selectedPoll.realtime){
+                <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                    The poll is still active. You'll see the results on
+                    <strong>{{ selectedPoll.deadline | date:'MMM d, y, h:mm a' }}</strong>.
+                </div>
+                }
+
+                @if ((hasVoted && selectedPoll.realtime) || !selectedPoll.isActive) {
                 <div class="space-y-4">
                     <h4 class="text-lg font-semibold text-cyan-400 mb-3">Results</h4>
 
