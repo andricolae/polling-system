@@ -41,4 +41,8 @@ export const serverRoutes: ServerRoute[] = [
     path: '404',
     renderMode: RenderMode.Client
   },
+  {
+    path: 'poll/:id',
+    renderMode: RenderMode.Client
+  }
 ];
