@@ -13,11 +13,14 @@ import {
   doc,
   updateDoc,
   DocumentReference,
-  arrayUnion
+  arrayUnion,
+  orderBy,
+  limit
 } from '@angular/fire/firestore';
 import { Observable, from, map, catchError, of, switchMap } from 'rxjs';
 import { Auth } from '@angular/fire/auth';
 import { isPlatformBrowser } from '@angular/common';
+
 export interface PollData {
   id?: string;
   title: string;
@@ -33,13 +36,16 @@ export interface PollData {
   results: string[];
   voters: string[];
   voted: string[];
+  isPublic?: boolean;
 }
+
 export interface User {
   uid: string;
   email: string;
   role: string;
   selected?: boolean;
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,7 +63,8 @@ export class PollService {
       ...pollData,
       created: serverTimestamp(),
       results,
-      voted: []
+      voted: [],
+      isPublic: pollData.isPublic || false
     };
 
     return from(addDoc(pollsRef, pollWithMetadata)).pipe(
@@ -134,6 +141,66 @@ export class PollService {
       map(snapshot => this.processPollSnapshot(snapshot)),
       catchError(error => {
         console.error('Error fetching past polls:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getLatestPublicPolls(limitCount: number = 3): Observable<PollData[]> {
+    const pollsRef = collection(this.firestore, 'polls');
+    const latestQuery = query(
+      pollsRef,
+      where('isPublic', '==', true),
+      where('isActive', '==', true),
+      orderBy('created', 'desc'),
+      limit(limitCount)
+    );
+
+    return from(getDocs(latestQuery)).pipe(
+      map(snapshot => this.processPollSnapshot(snapshot)),
+      catchError(error => {
+        console.error('Error fetching latest public polls:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getMostPopularPublicPolls(limitCount: number = 3): Observable<PollData[]> {
+    const pollsRef = collection(this.firestore, 'polls');
+    const popularQuery = query(
+      pollsRef,
+      where('isPublic', '==', true)
+    );
+
+    return from(getDocs(popularQuery)).pipe(
+      map(snapshot => {
+        const polls = this.processPollSnapshot(snapshot);
+        return polls
+          .map(poll => ({
+            ...poll,
+            totalVotes: poll.results.reduce((sum, result) => sum + parseInt(result || '0'), 0)
+          }))
+          .sort((a, b) => b.totalVotes - a.totalVotes)
+          .slice(0, limitCount);
+      }),
+      catchError(error => {
+        console.error('Error fetching popular public polls:', error);
+        return of([]);
+      })
+    );
+  }
+  getAllPublicPolls(): Observable<PollData[]> {
+    const pollsRef = collection(this.firestore, 'polls');
+    const allPublicQuery = query(
+      pollsRef,
+      where('isPublic', '==', true),
+      orderBy('created', 'desc')
+    );
+
+    return from(getDocs(allPublicQuery)).pipe(
+      map(snapshot => this.processPollSnapshot(snapshot)),
+      catchError(error => {
+        console.error('Error fetching all public polls:', error);
         return of([]);
       })
     );
@@ -231,7 +298,6 @@ export class PollService {
     } else if (startTime && typeof startTime === 'string') {
       startTime = new Date(startTime);
     } else {
-      // fallback
       startTime = created ?? new Date();
     }
 
@@ -249,7 +315,8 @@ export class PollService {
       realtime: data['realtime'] === true,
       results: data['results'] || [],
       voters: data['voters'] || [],
-      voted: data['voted'] || []
+      voted: data['voted'] || [],
+      isPublic: data['isPublic'] === true
     };
 
     return pollData;
