@@ -161,6 +161,19 @@
                 </div>
                 }
 
+                @if(selectedPoll.realtime){
+                @if(!selectedPoll.isActive){
+                <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                    The poll has ended, here are the results.
+                </div>
+                }
+                @else if (hasVoted) {
+                <div class="bg-cyan-900 text-cyan-300 text-center p-4 rounded-lg mt-4">
+                    You already voted, here are the results.
+                </div>
+                }
+                }
+
                 @if (hasVoted || !selectedPoll.isActive) {
                 <div class="space-y-4">
                     <h4 class="text-lg font-semibold text-cyan-400 mb-3">Results</h4>
@@ -202,12 +215,6 @@
                 </div>
                 }
             </div>
-
-            @if (selectedPoll.isActive && hasVoted) {
-            <div class="bg-cyan-900 text-cyan-300 text-center p-4 rounded-lg mt-4">
-                You have already voted on this poll. You can see the results below.
-            </div>
-            }
 
             @if (selectedPoll.isActive && !hasVoted) {
             <div class="flex-shrink-0 p-6 pt-4 border-t border-gray-700 bg-gray-800">
