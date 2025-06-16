@@ -5,6 +5,7 @@ import { adminGuard } from './guards/admin.guard';
 import { authGuard, emailVerifiedGuard } from './guards/auth.guard';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AllPollsComponent } from './pages/all-polls/all-polls.component';
 
 export const routes: Routes = [
@@ -44,5 +45,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/poll-create/poll-create.component').then(m => m.PollCreateComponent),
     canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: '404',
+    component: NotFoundComponent
   }
 ];
