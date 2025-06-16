@@ -96,125 +96,155 @@
     </div>
 
     @if (selectedPoll) {
-      <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div class="bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl max-h-[95vh] flex flex-col relative">
+    <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl max-h-[95vh] flex flex-col relative">
 
-              <div class="flex-shrink-0 p-6 pb-4 border-b border-gray-700">
-                  <button (click)="closeModal()"
-                      class="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl font-bold z-10 w-8 h-8 flex items-center justify-center hover:bg-gray-700 rounded">&times;</button>
+            <div class="flex-shrink-0 p-6 pb-4 border-b border-gray-700">
+                <button (click)="closeModal()"
+                    class="absolute top-4 right-4 text-gray-300 hover:text-white text-2xl font-bold z-10 w-8 h-8 flex items-center justify-center hover:bg-gray-700 rounded">&times;</button>
 
-                  <h3 class="text-2xl font-bold text-cyan-400 mb-3 pr-8">{{ selectedPoll.title }}</h3>
+                <h3 class="text-2xl font-bold text-cyan-400 mb-3 pr-8">{{ selectedPoll.title }}</h3>
 
-                  <div class="flex flex-wrap gap-2 mb-3">
-                      @if (selectedPoll.isActive) {
-                      <span class="bg-green-900 text-green-400 px-3 py-1 rounded-full text-sm font-medium">
-                          Active
-                      </span>
-                      } @else {
-                      <span class="bg-yellow-900 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium">
-                          Closed
-                      </span>
-                      }
+                <div class="flex flex-wrap gap-2 mb-3">
+                    @if (selectedPoll.isActive) {
+                    <span class="bg-green-900 text-green-400 px-3 py-1 rounded-full text-sm font-medium">
+                        Active
+                    </span>
+                    } @else {
+                    <span class="bg-yellow-900 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium">
+                        Closed
+                    </span>
+                    }
 
-                      @if (hasUserVoted(selectedPoll)) {
-                      <span class="bg-cyan-900 text-cyan-400 px-3 py-1 rounded-full text-sm font-medium">
-                          ✓ Voted
-                      </span>
-                      }
-                  </div>
+                    @if (hasUserVoted(selectedPoll)) {
+                    <span class="bg-cyan-900 text-cyan-400 px-3 py-1 rounded-full text-sm font-medium">
+                        ✓ Voted
+                    </span>
+                    }
+                </div>
 
-                  <p class="text-gray-400 italic mb-3">{{ selectedPoll.description }}</p>
-                  <p class="text-xl font-semibold text-white">{{ selectedPoll.question }}</p>
-              </div>
+                <p class="text-gray-400 italic mb-3">{{ selectedPoll.description }}</p>
+                <p class="text-xl font-semibold text-white">{{ selectedPoll.question }}</p>
+            </div>
 
-              <div class="flex-1 overflow-y-auto px-6 py-4 custom-scroll">
+            <div class="flex-1 overflow-y-auto px-6 py-4 custom-scroll">
 
-                  @if (successMessage) {
-                  <div class="mb-4 bg-green-700 text-white p-3 rounded">
-                      {{ successMessage }}
-                  </div>
-                  }
+                @if (successMessage) {
+                <div class="mb-4 bg-green-700 text-white p-3 rounded">
+                    {{ successMessage }}
+                </div>
+                }
 
-                  @if (errorMessage) {
-                  <div class="mb-4 bg-red-700 text-white p-3 rounded">
-                      {{ errorMessage }}
-                  </div>
-                  }
+                @if (errorMessage) {
+                <div class="mb-4 bg-red-700 text-white p-3 rounded">
+                    {{ errorMessage }}
+                </div>
+                }
 
-                  @if (selectedPoll.isActive && !hasVoted) {
-                  <div class="space-y-3">
-                      <h4 class="text-lg font-semibold text-cyan-400 mb-3">Cast Your Vote</h4>
+                @if (selectedPoll.isActive && !hasVoted && !hasPollStarted(selectedPoll)) {
+                <div class="bg-yellow-800 text-yellow-300 p-4 rounded-lg text-center mt-4">
+                    This poll hasn't started yet. Please check back after
+                    <strong>{{ selectedPoll.startTime | date:'MMM d, y, h:mm a' }}</strong>.
+                </div>
+                <div class="space-y-3">
+                    <h4 class="text-lg font-semibold text-cyan-400 mb-3">Cast Your Vote</h4>
 
-                      <form class="space-y-3">
-                          @for (answer of selectedPoll.answers; track answer; let i = $index) {
-                          <label class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600 transition-colors">
-                              <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-3"
-                                  [(ngModel)]="selectedAnswer" />
-                              <span class="text-white">{{ answer }}</span>
-                          </label>
-                          }
-                      </form>
-                  </div>
-                  }
+                    <form class="space-y-3">
+                        @for (answer of selectedPoll.answers; track answer; let i = $index) {
+                        <label class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600 transition-colors">
+                            <input type="radio" [value]="answer" name="answer" class="accent-cyan-500 mr-3"
+                                [(ngModel)]="selectedAnswer" />
+                            <span class="text-white">{{ answer }}</span>
+                        </label>
+                        }
+                    </form>
+                </div>
+                }
 
-                  @if (hasVoted || !selectedPoll.isActive) {
-                  <div class="space-y-4">
-                      <h4 class="text-lg font-semibold text-cyan-400 mb-3">Results</h4>
+                @if(selectedPoll.realtime){
+                @if(!selectedPoll.isActive){
+                <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                    The poll has ended, here are the results.
+                </div>
+                }
+                @else if (hasVoted) {
+                <div class="bg-cyan-900 text-cyan-300 text-center p-4 rounded-lg mt-4">
+                    You already voted, here are the results.
+                </div>
+                }
+                }
 
-                      @for (answer of selectedPoll.answers; track answer; let i = $index) {
-                      <div class="bg-gray-700 p-4 rounded">
-                          <div class="flex justify-between text-sm mb-2">
-                              <span class="font-medium">{{ answer }}</span>
-                              <span class="text-gray-300">{{ selectedPoll.results[i] || '0' }} votes</span>
-                          </div>
-                          <div class="w-full bg-gray-600 h-3 rounded overflow-hidden">
-                              <div class="bg-cyan-500 h-full transition-all duration-500"
-                                  [style.width.%]="(totalVotes() > 0) ? (parseInt(selectedPoll.results[i]) / totalVotes() * 100) : 0">
-                              </div>
-                          </div>
-                          <div class="text-xs text-gray-400 mt-1">
-                              {{ (totalVotes() > 0) ? ((parseInt(selectedPoll.results[i]) / totalVotes() * 100) | number:'1.1-1') : 0 }}%
-                          </div>
-                      </div>
-                      }
+                @if(hasVoted&&selectedPoll.isActive&&!selectedPoll.realtime){
+                <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                    The poll is still active. You'll see the results on
+                    <strong>{{ selectedPoll.deadline | date:'MMM d, y, h:mm a' }}</strong>.
+                </div>
+                }
 
-                      <div class="text-sm text-gray-400 pt-2 border-t border-gray-600">
-                          <strong>Total votes: {{ totalVotes() }}</strong>
-                      </div>
+                @if ((hasVoted && selectedPoll.realtime) || !selectedPoll.isActive) {
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-cyan-400 mb-3">Results</h4>
 
-                      @if (!selectedPoll.isActive && totalVotes() > 0 || selectedPoll.realtime) {
-                      <div class="mt-6 bg-gray-900 p-4 rounded-lg">
-                          <h5 class="text-md font-semibold text-cyan-400 mb-3 text-center">Visual Results</h5>
-                          <app-pie-chart [labels]="chartLabels" [series]="chartSeries"></app-pie-chart>
-                      </div>
-                      }
-                  </div>
-                  }
-              </div>
+                    @for (answer of selectedPoll.answers; track answer; let i = $index) {
+                    <div class="bg-gray-700 p-4 rounded">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="font-medium">{{ answer }}</span>
+                            <span class="text-gray-300">{{ selectedPoll.results[i] || '0' }} votes</span>
+                        </div>
+                        <div class="w-full bg-gray-600 h-3 rounded overflow-hidden">
+                            <div class="bg-cyan-500 h-full transition-all duration-500"
+                                [style.width.%]="(totalVotes() > 0) ? (parseInt(selectedPoll.results[i]) / totalVotes() * 100) : 0">
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            {{ (totalVotes() > 0) ? ((parseInt(selectedPoll.results[i]) / totalVotes() * 100) |
+                            number:'1.1-1') : 0 }}%
+                        </div>
+                    </div>
+                    }
 
-              @if (selectedPoll.isActive && !hasVoted) {
-              <div class="flex-shrink-0 p-6 pt-4 border-t border-gray-700 bg-gray-800">
-                  <button type="button" (click)="submitVote()"
-                      [disabled]="!selectedAnswer || loading"
-                      class="w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg shadow transition-all duration-300 text-lg"
-                      [class.opacity-50]="!selectedAnswer || loading">
-                      @if (loading) {
-                      <span class="flex items-center justify-center gap-2">
-                          <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                          Submitting...
-                      </span>
-                      } @else {
-                      <span>Submit Vote</span>
-                      }
-                  </button>
+                    <div class="text-sm text-gray-400 pt-2 border-t border-gray-600">
+                        <strong>Total votes: {{ totalVotes() }}</strong>
+                    </div>
 
-                  @if (!selectedAnswer) {
-                  <p class="text-sm text-gray-400 text-center mt-2">Please select an option to vote</p>
-                  }
-              </div>
-              }
+                    @if(!selectedPoll.isActive){
+                    <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                        The poll has ended. Here are the results.
+                    </div>
+                    }
 
-          </div>
-      </div>
+                    @if (!selectedPoll.isActive && totalVotes() > 0 || selectedPoll.realtime) {
+                    <div class="mt-6 bg-gray-900 p-4 rounded-lg">
+                        <h5 class="text-md font-semibold text-cyan-400 mb-3 text-center">Visual Results</h5>
+                        <app-pie-chart [labels]="chartLabels" [series]="chartSeries"></app-pie-chart>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            @if (selectedPoll.isActive && !hasVoted) {
+            <div class="flex-shrink-0 p-6 pt-4 border-t border-gray-700 bg-gray-800">
+                <button type="button" (click)="submitVote()" [disabled]="!selectedAnswer || loading"
+                    class="w-full bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg shadow transition-all duration-300 text-lg"
+                    [class.opacity-50]="!selectedAnswer || loading">
+                    @if (loading) {
+                    <span class="flex items-center justify-center gap-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                        Submitting...
+                    </span>
+                    } @else {
+                    <span>Submit Vote</span>
+                    }
+                </button>
+
+                @if (!selectedAnswer) {
+                <p class="text-sm text-gray-400 text-center mt-2">Please select an option to vote</p>
+                }
+            </div>
+            }
+
+        </div>
+    </div>
     }
 </div>
