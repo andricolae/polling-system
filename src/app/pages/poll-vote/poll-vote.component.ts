@@ -85,9 +85,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       this.openPoll(poll);
     } else {
       console.warn('Poll not found with ID:', pollId);
-      setTimeout(() => {
-        this.openPollById(pollId);
-      }, 500);
+      this.router.navigate(['/404']);
     }
   }
 

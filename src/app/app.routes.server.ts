@@ -32,5 +32,5 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'user-dashboard',
     renderMode: RenderMode.Client
-  }
+  },
 ];
