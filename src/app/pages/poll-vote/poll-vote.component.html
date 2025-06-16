@@ -141,7 +141,7 @@
                 </div>
                 }
 
-                @if (selectedPoll.isActive && !hasVoted && hasPollStarted(selectedPoll)) {
+                @if (selectedPoll.isActive && !hasVoted && !hasPollStarted(selectedPoll)) {
                 <div class="bg-yellow-800 text-yellow-300 p-4 rounded-lg text-center mt-4">
                     This poll hasn't started yet. Please check back after
                     <strong>{{ selectedPoll.startTime | date:'MMM d, y, h:mm a' }}</strong>.
@@ -186,6 +186,12 @@
                     <div class="text-sm text-gray-400 pt-2 border-t border-gray-600">
                         <strong>Total votes: {{ totalVotes() }}</strong>
                     </div>
+
+                    @if(!selectedPoll.isActive){
+                    <div class="bg-yellow-900 text-yellow-300 text-center p-4 rounded-lg mt-4">
+                        The poll has ended. Here are the results.
+                    </div>
+                    }
 
                     @if (!selectedPoll.isActive && totalVotes() > 0 || selectedPoll.realtime) {
                     <div class="mt-6 bg-gray-900 p-4 rounded-lg">
