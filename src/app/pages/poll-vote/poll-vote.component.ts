@@ -198,6 +198,10 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       this.loading = false;
       return;
     }
+    if (!this.hasPollStarted(this.selectedPoll)) {
+      this.errorMessage = 'This poll has not started yet,';
+      return;
+    }
 
     const voteSub = this.pollService.submitVote(pollId, answerIndex).subscribe({
       next: (success) => {
@@ -229,6 +233,9 @@ export class PollVoteComponent implements OnInit, OnDestroy {
         console.error('Error submitting vote:', error);
         this.errorMessage = 'Failed to submit vote. Please try again.';
       }
+
+
+
     });
 
     this.subscriptions.push(voteSub);
@@ -252,5 +259,9 @@ export class PollVoteComponent implements OnInit, OnDestroy {
 
   get chartLabels(): string[] {
     return this.selectedPoll?.answers ?? [];
+  }
+
+  hasPollStarted(poll: PollData): boolean {
+    return new Date() >= new Date(poll.startTime);
   }
 }
