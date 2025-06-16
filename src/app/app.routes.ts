@@ -49,5 +49,10 @@ export const routes: Routes = [
   {
     path: '404',
     component: NotFoundComponent
+  },
+  {
+    path: 'poll/:id',
+    loadComponent: () =>
+      import('./pages/single-poll/single-poll.component').then(m => m.SinglePollComponent)
   }
 ];
