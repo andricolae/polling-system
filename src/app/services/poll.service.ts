@@ -343,14 +343,17 @@ export class PollService {
     return pollData;
   }
 
-canUserViewPoll(poll: PollData, email: string | null, isAuthenticated: boolean): boolean {
-  if (!poll.voters || poll.voters.length === 0) return false;
+  canUserViewPoll(poll: PollData, email: string | null, isAuthenticated: boolean): boolean {
+    if (poll.isPublic) return true;
 
-  if (poll.voters.includes('public')) return true;
+    if (!isAuthenticated) return false;
 
-  if (poll.voters.includes('private')) return isAuthenticated;
+    // Private poll: any authenticated user can see
+    if (!poll.voters || poll.voters.length === 0) return true;
 
-  return !!email && poll.voters.includes(email);
-}
+    // Members-only: only if email is explicitly listed
+    return !!email && poll.voters.includes(email);
+  }
+
 
 }
