@@ -115,7 +115,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
 
   navigateToPoll(poll: PollData) {
     if (poll.id) {
-      this.router.navigate(['/vote', poll.id]).then(() => {
+      this.router.navigate(['/poll', poll.id]).then(() => {
         window.scrollTo(0, 0);
       });
     }
