@@ -32,6 +32,8 @@ export class PollCreateComponent implements OnInit {
   emailErrorMessage: string | null = null;
   emailValidationMessages: string[] = [];
 
+  isPublic: boolean = false;
+
   constructor(
     private pollService: PollService,
     private router: Router
@@ -121,68 +123,68 @@ export class PollCreateComponent implements OnInit {
   // }
 
   addUserByEmail() {
-  this.emailErrorMessage = null;
-  this.emailValidationMessages = [];
+    this.emailErrorMessage = null;
+    this.emailValidationMessages = [];
 
-  if (!this.newUserEmail.trim()) {
-    return;
-  }
-
-  const emailList = this.newUserEmail.split(',')
-    .map(email => email.trim())
-    .filter(email => email !== '');
-
-  let addedCount = 0;
-  let alreadySelectedCount = 0;
-  const invalidEmails: string[] = [];
-
-  emailList.forEach(email => {
-    const userExists = this.users.find(user =>
-      user.email.toLowerCase() === email.toLowerCase()
-    );
-
-    if (!userExists) {
-      invalidEmails.push(email);
+    if (!this.newUserEmail.trim()) {
       return;
     }
 
-    const alreadySelected = this.selectedUsers.find(user =>
-      user.email.toLowerCase() === email.toLowerCase()
-    );
+    const emailList = this.newUserEmail.split(',')
+      .map(email => email.trim())
+      .filter(email => email !== '');
 
-    if (alreadySelected) {
-      if (!alreadySelected.selected) {
-        alreadySelected.selected = true;
-        addedCount++;
-      } else {
-        alreadySelectedCount++;
+    let addedCount = 0;
+    let alreadySelectedCount = 0;
+    const invalidEmails: string[] = [];
+
+    emailList.forEach(email => {
+      const userExists = this.users.find(user =>
+        user.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (!userExists) {
+        invalidEmails.push(email);
+        return;
       }
-    } else {
-      this.selectedUsers.push({ ...userExists, selected: true });
-      addedCount++;
+
+      const alreadySelected = this.selectedUsers.find(user =>
+        user.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (alreadySelected) {
+        if (!alreadySelected.selected) {
+          alreadySelected.selected = true;
+          addedCount++;
+        } else {
+          alreadySelectedCount++;
+        }
+      } else {
+        this.selectedUsers.push({ ...userExists, selected: true });
+        addedCount++;
+      }
+    });
+
+    if (invalidEmails.length > 0) {
+      this.emailValidationMessages.push(`Invalid emails: ${invalidEmails.join(', ')}`);
     }
-  });
 
-  if (invalidEmails.length > 0) {
-    this.emailValidationMessages.push(`Invalid emails: ${invalidEmails.join(', ')}`);
+    if (addedCount > 0) {
+      this.emailValidationMessages.push(`✓ Successfully added ${addedCount} user(s)`);
+    }
+
+    if (alreadySelectedCount > 0) {
+      this.emailValidationMessages.push(`${alreadySelectedCount} user(s) were already selected`);
+    }
+
+    this.newUserEmail = '';
+
+    this.updateSelectAllState();
+
+    setTimeout(() => {
+      this.emailValidationMessages = [];
+    }, 5000);
   }
-
-  if (addedCount > 0) {
-    this.emailValidationMessages.push(`✓ Successfully added ${addedCount} user(s)`);
-  }
-
-  if (alreadySelectedCount > 0) {
-    this.emailValidationMessages.push(`${alreadySelectedCount} user(s) were already selected`);
-  }
-
-  this.newUserEmail = '';
-
-  this.updateSelectAllState();
-
-  setTimeout(() => {
-    this.emailValidationMessages = [];
-  }, 5000);
-}
 
   updateSelectAllState() {
     this.selectAll = this.users.length > 0 &&
@@ -208,9 +210,13 @@ export class PollCreateComponent implements OnInit {
     this.loading = true;
     console.log('Form validated, creating poll...');
 
-    const selectedVoters = this.selectedUsers
-      .filter(user => user.selected)
-      .map(user => user.uid);
+    let selectedVoters: string[] = [];
+
+    if (!this.isPublic) {
+      selectedVoters = this.selectedUsers
+        .filter(user => user.selected)
+        .map(user => user.uid);
+    }
 
     const newPoll = {
       title: this.title,
@@ -222,7 +228,8 @@ export class PollCreateComponent implements OnInit {
       createdBy: this.pollService.getCurrentUserId() || '',
       isActive: true,
       realtime: this.resultTiming === 'after',
-      voters: selectedVoters
+      isPublic: this.isPublic,
+      voters: this.isPublic ? [] : selectedVoters
     };
 
     console.log('Poll data to be saved:', newPoll);
@@ -280,11 +287,15 @@ export class PollCreateComponent implements OnInit {
       return false;
     }
 
-    const hasVoters = this.selectedUsers.some(user => user.selected);
-    if (!hasVoters) {
-      this.errorMessage = 'Please select at least one voter';
-      return false;
+    if (!this.isPublic) {
+      const hasVoters = this.selectedUsers.some(user => user.selected);
+      const isMembersOnly = hasVoters;
+      if (isMembersOnly && !hasVoters) {
+        this.errorMessage = 'Please select at least one voter for members-only polls';
+        return false;
+      }
     }
+
 
     return true;
   }
