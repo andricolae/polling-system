@@ -251,11 +251,6 @@ export class PollService {
 
     console.log('[submitVote] Called with:', { pollId, answerIndex, userEmail });
 
-    if (!userEmail) {
-      console.warn('[submitVote] No user email — must be logged in for non-public polls.');
-      return of(false);
-    }
-
     const pollRef = doc(this.firestore, `polls/${pollId}`) as DocumentReference<DocumentData>;
 
     return from(getDoc(pollRef)).pipe(
@@ -284,20 +279,31 @@ export class PollService {
         });
 
         // Fix result array if needed
-        if (results.length < answers.length) {
-          results = Array(answers.length).fill('0').map((_, i) => results[i] || '0');
-          console.log('[submitVote] Normalized results array:', results);
-        }
+      if (!isActive) return of(false);
 
-        if (!isActive) {
-          console.warn('[submitVote] Poll is not active');
+      // Anonymous user voting
+      if (!userEmail) {
+        if (!isPublic) {
+          console.warn('[submitVote] Anonymous user trying to vote on non-public poll — denied.');
           return of(false);
         }
 
-        if (voted.includes(userEmail)) {
-          console.warn('[submitVote] User already voted:', userEmail);
-          return of(false);
-        }
+        // Proceed: update results only, do not update voted[]
+        if (answerIndex < 0 || answerIndex >= results.length) return of(false);
+        results[answerIndex] = (parseInt(results[answerIndex] || '0') + 1).toString();
+
+        return from(updateDoc(pollRef, { results })).pipe(
+          map(() => true),
+          catchError(error => {
+            console.error(`[submitVote] Error updating anonymous vote for poll ${pollId}:`, error);
+            return of(false);
+          })
+        );
+      }
+
+      // Prevent duplicate votes for authenticated users
+      if (voted.includes(userEmail)) return of(false);
+
 
         const canVote = this.canUserVoteOnPoll(
           {
