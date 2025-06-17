@@ -24,19 +24,22 @@
       <!-- Status Messages -->
       <div class="space-y-3">
         <!-- Not started -->
-        <div *ngIf="selectedPoll.isActive && !hasPollStarted()" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && !hasPollStarted()"
+          class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           This poll hasn't started yet. Please check back after
           <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
         </div>
 
         <!-- Already voted, realtime false -->
-        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime"
+          class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           You already voted. Results will be available on:
           <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
         </div>
 
         <!-- Already voted, realtime true -->
-        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && selectedPoll.realtime" class="bg-cyan-900 text-cyan-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && selectedPoll.realtime"
+          class="bg-cyan-900 text-cyan-300 p-4 rounded text-center">
           You already voted, here are the results.
         </div>
 
@@ -44,22 +47,23 @@
         <div *ngIf="!selectedPoll.isActive" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           The poll has ended. Here are the results.
         </div>
+
       </div>
+
 
       <!-- Vote Form -->
       <div *ngIf="selectedPoll.isActive && hasPollStarted() && !hasVoted">
         <h3 class="text-lg font-semibold text-cyan-300">Choose an answer:</h3>
         <form class="space-y-3">
           <label *ngFor="let answer of selectedPoll.answers"
-                 class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600">
+            class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600">
             <input type="radio" [value]="answer" name="answer" class="mr-2 accent-cyan-500"
-                   [(ngModel)]="selectedAnswer" />
+              [(ngModel)]="selectedAnswer" />
             {{ answer }}
           </label>
         </form>
-        <button (click)="submitVote()"
-                [disabled]="!selectedAnswer || loading"
-                class="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-6 rounded shadow transition">
+        <button (click)="submitVote()" [disabled]="!selectedAnswer || loading"
+          class="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-6 rounded shadow transition">
           Submit Vote
         </button>
       </div>

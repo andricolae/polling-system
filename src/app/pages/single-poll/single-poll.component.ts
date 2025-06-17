@@ -18,6 +18,8 @@ export class SinglePollComponent implements OnInit {
   hasVoted: boolean = false;
   loading: boolean = true;
   errorMessage: string = '';
+  alreadyVotedMessage: string = '';
+
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +38,13 @@ export class SinglePollComponent implements OnInit {
             return;
           }
           this.selectedPoll = poll;
-          this.hasVoted = !!poll?.voted?.includes(this.pollService.getCurrentUserId() || '');
+          const userEmail = this.pollService.getCurrentUserEmail();
+          this.hasVoted = !!poll?.voted?.includes(userEmail || '');
+
+          if (this.hasVoted) {
+            this.alreadyVotedMessage = 'You have already voted on this poll.';
+          }
+
           this.loading = false;
         },
         error: (error) => {
@@ -50,6 +58,7 @@ export class SinglePollComponent implements OnInit {
       this.loading = false;
     }
   }
+
 
   submitVote(): void {
     if (!this.selectedPoll?.id || !this.selectedAnswer) return;
