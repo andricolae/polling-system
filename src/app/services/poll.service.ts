@@ -115,6 +115,27 @@ export class PollService {
     return null;
   }
 
+  getCurrentUserEmail(): string | null {
+    if (this.auth.currentUser?.email) {
+      return this.auth.currentUser.email;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          return user?.email || null;
+        } catch (e) {
+          console.error('Error parsing user from localStorage:', e);
+          return null;
+        }
+      }
+    }
+
+    return null;
+  }
+
   formatEmail(email: string): string {
     if (!email) return '';
     return email.split('@')[0];
@@ -321,4 +342,15 @@ export class PollService {
 
     return pollData;
   }
+
+canUserViewPoll(poll: PollData, email: string | null, isAuthenticated: boolean): boolean {
+  if (!poll.voters || poll.voters.length === 0) return false;
+
+  if (poll.voters.includes('public')) return true;
+
+  if (poll.voters.includes('private')) return isAuthenticated;
+
+  return !!email && poll.voters.includes(email);
+}
+
 }

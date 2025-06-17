@@ -79,14 +79,20 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     if (!poll) {
       poll = this.pastPolls.find(p => p.id === pollId);
     }
+    const currentUserEmail = this.pollService.getCurrentUserEmail();
+    const isAuthenticated = !!this.currentUserId;
 
-    if (poll) {
-      console.log('Found poll to open:', poll);
-      this.openPoll(poll);
-    } else {
-      console.warn('Poll not found with ID:', pollId);
-      this.router.navigate(['/404']);
-    }
+    // if (poll) {
+    //   console.log('Found poll to open:', poll);
+    //   this.openPoll(poll);
+    this.pollService.getPollById(pollId).subscribe(poll => {
+      if (poll && this.pollService.canUserViewPoll(poll, currentUserEmail, isAuthenticated)) {
+        this.openPoll(poll);
+      } else {
+        console.warn('Poll not found with ID:', pollId);
+        this.router.navigate(['/404']);
+      }
+    });
   }
 
   navigateTo(path: string) {
@@ -130,10 +136,16 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       return [];
     }
 
+    const currentUserEmail = this.pollService.getCurrentUserEmail();
+    const isAuthenticated = !!this.currentUserId;
     const now = new Date();
 
+    // return polls.filter(poll =>
+    //   poll.voters?.includes(this.currentUserId!) &&
+    //   poll.startTime <= now
+    // );
     return polls.filter(poll =>
-      poll.voters?.includes(this.currentUserId!) &&
+      this.pollService.canUserViewPoll(poll, currentUserEmail, isAuthenticated) &&
       poll.startTime <= now
     );
   }
@@ -233,9 +245,6 @@ export class PollVoteComponent implements OnInit, OnDestroy {
         console.error('Error submitting vote:', error);
         this.errorMessage = 'Failed to submit vote. Please try again.';
       }
-
-
-
     });
 
     this.subscriptions.push(voteSub);

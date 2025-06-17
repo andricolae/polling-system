@@ -26,7 +26,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   constructor(
     private pollService: PollService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadAllPublicPolls();
@@ -40,10 +40,15 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   loadAllPublicPolls() {
     this.loading = true;
     this.error = null;
+    const email = this.pollService.getCurrentUserEmail();
+    const isAuth = !!email;
 
     const pollsSub = this.pollService.getAllPublicPolls().subscribe({
       next: (polls) => {
-        this.allPublicPolls = polls;
+        // this.allPublicPolls = polls;
+        this.allPublicPolls = polls.filter(p =>
+          this.pollService.canUserViewPoll(p, email, isAuth)
+        );
         this.applyFiltersAndSort();
         this.loading = false;
       },
