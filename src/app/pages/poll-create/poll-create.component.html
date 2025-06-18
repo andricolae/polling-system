@@ -27,8 +27,9 @@
                 <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700">
                     <h2 class="text-xl font-bold text-cyan-400 mb-6 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45.707a1.5 1.5 0 10-2.9 0l-.707.707a1 1 0 101.414 1.414L8.5 12.207l.707.707a1 1 0 101.414-1.414l-.707-.707z"/>
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45.707a1.5 1.5 0 10-2.9 0l-.707.707a1 1 0 101.414 1.414L8.5 12.207l.707.707a1 1 0 101.414-1.414l-.707-.707z" />
                         </svg>
                         Poll Details
                     </h2>
@@ -59,34 +60,40 @@
                 <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700">
                     <h2 class="text-xl font-bold text-cyan-400 mb-6 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                            <path fill-rule="evenodd"
+                                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
                         </svg>
                         Answer Options
                     </h2>
 
                     <div class="space-y-4">
-                        <div *ngFor="let option of answerOptions; let i = index; trackBy: trackByIndex" class="relative">
-                            <label class="block text-xs font-medium mb-1 text-gray-400">Option {{ i + 1 }} {{ i < 2 ? '*' : '' }}</label>
-                            <div class="flex gap-2">
-                                <input type="text" [(ngModel)]="answerOptions[i]" [placeholder]="'Option ' + (i + 1)"
-                                    class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" />
-                                @if (i >= 2) {
-                                <button type="button" (click)="removeOption(i)"
-                                    class="px-3 py-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition duration-200"
-                                    aria-label="Remove Option">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
-                                    </svg>
-                                </button>
-                                }
-                            </div>
+                        <div *ngFor="let option of answerOptions; let i = index; trackBy: trackByIndex"
+                            class="relative">
+                            <label class="block text-xs font-medium mb-1 text-gray-400">Option {{ i + 1 }} {{ i < 2
+                                    ? '*' : '' }}</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" [(ngModel)]="answerOptions[i]"
+                                            [placeholder]="'Option ' + (i + 1)"
+                                            class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" />
+                                        @if (i >= 2) {
+                                        <button type="button" (click)="removeOption(i)"
+                                            class="px-3 py-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition duration-200"
+                                            aria-label="Remove Option">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+                                            </svg>
+                                        </button>
+                                        }
+                                    </div>
                         </div>
 
                         <button type="button" (click)="addOption()" [disabled]="answerOptions.length >= maxOptions"
                             class="w-full mt-4 py-3 px-4 border-2 border-dashed border-cyan-500/30 text-cyan-400 hover:border-cyan-500/50 hover:bg-cyan-500/5 rounded-lg transition duration-200 flex items-center justify-center gap-2"
                             [class.opacity-50]="answerOptions.length >= maxOptions">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                                <path fill-rule="evenodd"
+                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                             </svg>
                             Add Option (max 5)
                         </button>
@@ -96,31 +103,58 @@
                 <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700">
                     <h2 class="text-xl font-bold text-cyan-400 mb-6 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            <path
+                                d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        Voters
+                        Who Can Vote
                     </h2>
 
-                    <div class="space-y-4">
-                        <label class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition duration-200">
-                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()" class="accent-cyan-500" />
+                    <!-- public / private toggle -->
+                    <div class="space-y-3 mb-6">
+                        <label
+                            class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/30 transition duration-200">
+                            <input type="radio" [(ngModel)]="isPublic" [value]="true" class="accent-cyan-500" />
+                            <div>
+                                <div class="text-sm font-medium">Public Poll</div>
+                                <div class="text-xs text-gray-400">Anyone can vote (even without logging in)</div>
+                            </div>
+                        </label>
+                        <label
+                            class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/30 transition duration-200">
+                            <input type="radio" [(ngModel)]="isPublic" [value]="false" class="accent-cyan-500" />
+                            <div>
+                                <div class="text-sm font-medium">Private Poll</div>
+                                <div class="text-xs text-gray-400">Only selected users can vote</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- only show user selection if private -->
+                    <div *ngIf="!isPublic" class="space-y-4">
+
+                        <label
+                            class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition duration-200">
+                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()"
+                                class="accent-cyan-500" />
                             <span class="text-sm font-medium">Select All Users</span>
                         </label>
 
                         <div class="space-y-2">
                             <label class="block text-sm font-semibold text-gray-300">Add User by Email</label>
                             <div class="flex gap-2">
-                                <input type="email" [(ngModel)]="newUserEmail" placeholder="one or more, separated by comma"
+                                <input type="email" [(ngModel)]="newUserEmail"
+                                    placeholder="one or more, separated by comma"
                                     class="flex-1 p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition duration-200" />
                                 <button type="button" (click)="addUserByEmail()" [disabled]="!newUserEmail"
                                     class="px-4 py-3 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition duration-200">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+                                        <path fill-rule="evenodd"
+                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                                     </svg>
                                 </button>
                             </div>
 
-                          @if (emailValidationMessages.length > 0) {
+                            @if (emailValidationMessages.length > 0) {
                             <div class="space-y-2">
                                 @for (message of emailValidationMessages; track $index) {
                                 <div class="p-3 rounded-lg text-sm"
@@ -129,7 +163,7 @@
                                 </div>
                                 }
                             </div>
-                          }
+                            }
                         </div>
 
                         @if (selectedUsers.length === 0) {
@@ -141,8 +175,10 @@
                         @if (selectedUsers.length > 0) {
                         <div class="max-h-48 overflow-y-auto space-y-2 pr-2">
                             @for (user of selectedUsers; track trackByUid($index, user)) {
-                            <label class="flex items-center gap-3 text-sm cursor-pointer p-2 rounded hover:bg-gray-700/30 transition duration-200">
-                                <input type="checkbox" [(ngModel)]="user.selected" (change)="onUserSelectionChange()" class="accent-cyan-500" />
+                            <label
+                                class="flex items-center gap-3 text-sm cursor-pointer p-2 rounded hover:bg-gray-700/30 transition duration-200">
+                                <input type="checkbox" [(ngModel)]="user.selected" (change)="onUserSelectionChange()"
+                                    class="accent-cyan-500" />
                                 <span>{{ getUsernameFromEmail(user.email) }} ({{ user.email }})</span>
                             </label>
                             }
@@ -150,13 +186,15 @@
                         }
                     </div>
                 </div>
+
             </div>
 
             <div class="lg:col-span-1 space-y-8">
                 <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700">
                     <h2 class="text-xl font-bold text-cyan-400 mb-6 flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/>
+                            <path fill-rule="evenodd"
+                                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" />
                         </svg>
                         Settings
                     </h2>
@@ -165,15 +203,19 @@
                         <div>
                             <label class="block text-sm font-semibold mb-3 text-gray-300">Results Display</label>
                             <div class="space-y-3">
-                                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition duration-200">
-                                    <input type="radio" name="resultTiming" [(ngModel)]="resultTiming" value="end" class="accent-cyan-500" />
+                                <label
+                                    class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition duration-200">
+                                    <input type="radio" name="resultTiming" [(ngModel)]="resultTiming" value="end"
+                                        class="accent-cyan-500" />
                                     <div>
                                         <div class="text-sm font-medium">When voting ends</div>
                                         <div class="text-xs text-gray-400">Hide results until poll closes</div>
                                     </div>
                                 </label>
-                                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition duration-200">
-                                    <input type="radio" name="resultTiming" [(ngModel)]="resultTiming" value="after" class="accent-cyan-500" />
+                                <label
+                                    class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition duration-200">
+                                    <input type="radio" name="resultTiming" [(ngModel)]="resultTiming" value="after"
+                                        class="accent-cyan-500" />
                                     <div>
                                         <div class="text-sm font-medium">After user votes</div>
                                         <div class="text-xs text-gray-400">Show results immediately</div>
@@ -204,7 +246,8 @@
                 [class.opacity-50]="loading">
                 <span class="flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
                     </svg>
                     @if (loading) {
                     <span>Creating...</span>
