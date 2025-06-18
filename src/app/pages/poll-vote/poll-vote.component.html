@@ -141,11 +141,7 @@
                 </div>
                 }
 
-                @if (selectedPoll.isActive && !hasVoted && !hasPollStarted(selectedPoll)) {
-                <div class="bg-yellow-800 text-yellow-300 p-4 rounded-lg text-center mt-4">
-                    This poll hasn't started yet. Please check back after
-                    <strong>{{ selectedPoll.startTime | date:'MMM d, y, h:mm a' }}</strong>.
-                </div>
+                @if (selectedPoll.isActive && !hasVoted && hasPollStarted(selectedPoll)) {
                 <div class="space-y-3">
                     <h4 class="text-lg font-semibold text-cyan-400 mb-3">Cast Your Vote</h4>
 
@@ -158,6 +154,12 @@
                         </label>
                         }
                     </form>
+                </div>
+                }
+                @if (selectedPoll.isActive && !hasVoted && !hasPollStarted(selectedPoll)) {
+                <div class="bg-yellow-800 text-yellow-300 p-4 rounded-lg text-center mt-4">
+                    This poll hasn't started yet. Please check back after
+                    <strong>{{ selectedPoll.startTime | date:'MMM d, y, h:mm a' }}</strong>.
                 </div>
                 }
 

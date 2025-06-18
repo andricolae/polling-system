@@ -115,6 +115,27 @@ export class PollService {
     return null;
   }
 
+  getCurrentUserEmail(): string | null {
+    if (this.auth.currentUser?.email) {
+      return this.auth.currentUser.email;
+    }
+
+    if (isPlatformBrowser(this.platformId)) {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          return user?.email || null;
+        } catch (e) {
+          console.error('Error parsing user from localStorage:', e);
+          return null;
+        }
+      }
+    }
+
+    return null;
+  }
+
   formatEmail(email: string): string {
     if (!email) return '';
     return email.split('@')[0];
@@ -225,10 +246,8 @@ export class PollService {
   }
 
   submitVote(pollId: string, answerIndex: number): Observable<boolean> {
-    const userId = this.getCurrentUserId();
-    if (!userId) {
-      return of(false);
-    }
+    const userEmail = this.getCurrentUserEmail();
+    const isAuthenticated = !!userEmail;
 
     const pollRef = doc(this.firestore, `polls/${pollId}`) as DocumentReference<DocumentData>;
 
@@ -240,12 +259,49 @@ export class PollService {
 
         const data = docSnap.data();
         const voted: string[] = data['voted'] || [];
+        const answers: string[] = data['answers'] || [];
+        let results: string[] = data['results'] || [];
+        const isActive: boolean = data['isActive'] === true;
+        const isPublic: boolean = data['isPublic'] === true;
+        const voters: string[] = data['voters'] || [];
 
-        if (voted.includes(userId)) {
-          return of(false);
+        if (!isActive) return of(false);
+
+        // anonymous user voting
+        if (!userEmail) {
+          if (!isPublic) {
+            return of(false);
+          }
+
+          if (answerIndex < 0 || answerIndex >= results.length) return of(false);
+          results[answerIndex] = (parseInt(results[answerIndex] || '0') + 1).toString();
+
+          return from(updateDoc(pollRef, { results })).pipe(
+            map(() => true),
+            catchError(error => {
+              return of(false);
+            })
+          );
         }
 
-        const results = [...(data['results'] || [])];
+        if (voted.includes(userEmail)) return of(false);
+
+        const isAdmin = this.getCurrentUserRole() === 'admin';
+        const canVote = this.canUserVoteOnPoll(
+          {
+            id: pollId,
+            isActive,
+            isPublic,
+            voters
+          } as PollData,
+          userEmail,
+          isAuthenticated,
+          isAdmin
+        );
+
+        if (!canVote) {
+          return of(false);
+        }
 
         if (answerIndex < 0 || answerIndex >= results.length) {
           return of(false);
@@ -255,20 +311,26 @@ export class PollService {
 
         return from(updateDoc(pollRef, {
           results: results,
-          voted: arrayUnion(userId)
+          voted: arrayUnion(userEmail)
         })).pipe(
-          map(() => true),
+          map(() => {
+            return true;
+          }),
           catchError(error => {
-            console.error(`Error updating vote for poll ${pollId}:`, error);
             return of(false);
           })
         );
       }),
+
       catchError(error => {
-        console.error(`Error submitting vote for poll ${pollId}:`, error);
         return of(false);
       })
     );
+  }
+
+  getCurrentUserRole(): 'admin' | 'user' | null {
+    const userData = JSON.parse(localStorage.getItem('user') || 'null');
+    return userData?.role || null;
   }
 
   private processPollSnapshot(snapshot: QuerySnapshot<DocumentData>): PollData[] {
@@ -321,4 +383,41 @@ export class PollService {
 
     return pollData;
   }
+
+  canUserViewPoll(poll: PollData, email: string | null, isAuthenticated: boolean): boolean {
+    if (poll.isPublic) return true;
+
+    if (!isAuthenticated) return false;
+
+    if (!poll.voters || poll.voters.length === 0) return true;
+
+    return !!email && poll.voters.includes(email);
+  }
+
+  canUserVoteOnPoll(poll: PollData, userEmail: string | null, isAuthenticated?: boolean, isAdmin: boolean = false): boolean {
+    if (!poll) {
+      return false;
+    }
+
+    if (poll.isPublic) {
+      return true;
+    }
+
+    if (!isAuthenticated || !userEmail) {
+      return false;
+    }
+
+    if (isAdmin) {
+      return poll.voters.includes(userEmail!);
+    }
+
+    if (!poll.voters || poll.voters.length === 0) {
+      return true;
+    }
+
+    const isListed = poll.voters.includes(userEmail);
+
+    return isListed;
+  }
+
 }
