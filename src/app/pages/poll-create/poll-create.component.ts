@@ -91,37 +91,6 @@ export class PollCreateComponent implements OnInit {
     return this.pollService.formatEmail(email);
   }
 
-  // addUserByEmail() {
-  //   this.emailErrorMessage = null;
-
-  //   if (!this.newUserEmail.trim()) {
-  //     return;
-  //   }
-
-  //   const userExists = this.users.find(user =>
-  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
-  //   );
-
-  //   if (!userExists) {
-  //     this.emailErrorMessage = 'User with this email does not exist. Please double-check the email address.';
-  //     return;
-  //   }
-
-  //   const alreadySelected = this.selectedUsers.find(user =>
-  //     user.email.toLowerCase() === this.newUserEmail.toLowerCase().trim()
-  //   );
-
-  //   if (alreadySelected) {
-  //     alreadySelected.selected = true;
-  //   } else {
-  //     this.selectedUsers.push({ ...userExists, selected: true });
-  //   }
-
-  //   this.newUserEmail = '';
-
-  //   this.updateSelectAllState();
-  // }
-
   addUserByEmail() {
     this.emailErrorMessage = null;
     this.emailValidationMessages = [];
@@ -215,7 +184,7 @@ export class PollCreateComponent implements OnInit {
     if (!this.isPublic) {
       selectedVoters = this.selectedUsers
         .filter(user => user.selected)
-        .map(user => user.uid);
+        .map(user => user.email);
     }
 
     const newPoll = {

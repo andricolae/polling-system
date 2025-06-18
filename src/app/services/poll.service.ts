@@ -268,43 +268,30 @@ export class PollService {
         const isPublic: boolean = data['isPublic'] === true;
         const voters: string[] = data['voters'] || [];
 
-        console.log('[submitVote] Poll fetched:', {
-          isActive,
-          isPublic,
-          answers,
-          results,
-          voted,
-          voters,
-          userEmail
-        });
+        if (!isActive) return of(false);
 
-        // Fix result array if needed
-      if (!isActive) return of(false);
+        // anonymous user voting
+        if (!userEmail) {
+          if (!isPublic) {
+            console.warn('[submitVote] Anonymous user trying to vote on non-public poll — denied.');
+            return of(false);
+          }
 
-      // Anonymous user voting
-      if (!userEmail) {
-        if (!isPublic) {
-          console.warn('[submitVote] Anonymous user trying to vote on non-public poll — denied.');
-          return of(false);
+          if (answerIndex < 0 || answerIndex >= results.length) return of(false);
+          results[answerIndex] = (parseInt(results[answerIndex] || '0') + 1).toString();
+
+          return from(updateDoc(pollRef, { results })).pipe(
+            map(() => true),
+            catchError(error => {
+              console.error(`[submitVote] Error updating anonymous vote for poll ${pollId}:`, error);
+              return of(false);
+            })
+          );
         }
 
-        // Proceed: update results only, do not update voted[]
-        if (answerIndex < 0 || answerIndex >= results.length) return of(false);
-        results[answerIndex] = (parseInt(results[answerIndex] || '0') + 1).toString();
+        if (voted.includes(userEmail)) return of(false);
 
-        return from(updateDoc(pollRef, { results })).pipe(
-          map(() => true),
-          catchError(error => {
-            console.error(`[submitVote] Error updating anonymous vote for poll ${pollId}:`, error);
-            return of(false);
-          })
-        );
-      }
-
-      // Prevent duplicate votes for authenticated users
-      if (voted.includes(userEmail)) return of(false);
-
-
+        const isAdmin = this.getCurrentUserRole() === 'admin';
         const canVote = this.canUserVoteOnPoll(
           {
             id: pollId,
@@ -313,7 +300,8 @@ export class PollService {
             voters
           } as PollData,
           userEmail,
-          isAuthenticated
+          isAuthenticated,
+          isAdmin
         );
 
         console.log('[submitVote] canVote check:', canVote);
@@ -346,6 +334,7 @@ export class PollService {
           })
         );
       }),
+
       catchError(error => {
         console.error('[submitVote] Firestore read failed:', error);
         return of(false);
@@ -353,8 +342,10 @@ export class PollService {
     );
   }
 
-
-
+  getCurrentUserRole(): 'admin' | 'user' | null {
+    const userData = JSON.parse(localStorage.getItem('user') || 'null');
+    return userData?.role || null;
+  }
 
   private processPollSnapshot(snapshot: QuerySnapshot<DocumentData>): PollData[] {
     return snapshot.docs.map(doc => {
@@ -419,42 +410,28 @@ export class PollService {
     return !!email && poll.voters.includes(email);
   }
 
-  canUserVoteOnPoll(poll: PollData, userEmail: string | null, isAuthenticated?: boolean): boolean {
-    console.log('[canUserVoteOnPoll] Called with:', {
-      pollId: poll?.id,
-      isPublic: poll?.isPublic,
-      voters: poll?.voters,
-      userEmail,
-      isAuthenticated
-    });
-
+  canUserVoteOnPoll(poll: PollData, userEmail: string | null, isAuthenticated?: boolean, isAdmin: boolean = false): boolean {
     if (!poll) {
-      console.warn('[canUserVoteOnPoll] Poll is undefined');
       return false;
     }
 
     if (poll.isPublic) {
-      console.log('[canUserVoteOnPoll] ✅ Poll is public — allowing vote.');
       return true;
     }
 
-    if (!userEmail) {
-      console.warn('[canUserVoteOnPoll] ❌ No user email provided.');
+    if (!isAuthenticated || !userEmail) {
       return false;
     }
 
-    if (!isAuthenticated) {
-      console.warn('[canUserVoteOnPoll] ❌ User is not authenticated for a non-public poll.');
-      return false;
+    if (isAdmin) {
+      return poll.voters.includes(userEmail!);
     }
 
     if (!poll.voters || poll.voters.length === 0) {
-      console.log('[canUserVoteOnPoll] ✅ Poll is private, but no voter list specified — allowing vote.');
       return true;
     }
 
     const isListed = poll.voters.includes(userEmail);
-    console.log(`[canUserVoteOnPoll] Voter check: ${userEmail} is ${isListed ? '' : 'not '}in voter list.`);
 
     return isListed;
   }

@@ -158,7 +158,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       console.log('Voted list:', poll.voted);
       console.log('Current email:', this.currentUserEmail);
 
-      this.hasVoted = this.isAdmin || !!(this.currentUserEmail && poll.voted && poll.voted.includes(this.currentUserEmail));
+      this.hasVoted = !!(this.currentUserEmail && poll.voted.includes(this.currentUserEmail));
+
     } else {
       this.hasVoted = true;
     }
@@ -178,11 +179,6 @@ export class PollVoteComponent implements OnInit, OnDestroy {
 
   submitVote() {
     console.log('[submitVote] Function triggered');
-
-    if (this.isAdmin) {
-      console.warn('[submitVote] Admin users are not allowed to vote.');
-      return;
-    }
 
     if (!this.selectedPoll) {
       console.error('[submitVote] No poll selected');
