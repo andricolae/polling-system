@@ -73,7 +73,7 @@
                         @for (poll of latestPublicPolls; track poll.id) {
                         @if (poll.isActive) {
                         <div class="group bg-gray-700/50 hover:bg-gray-700/70 p-6 rounded-xl border border-gray-600 hover:border-cyan-400 transition-all duration-300 cursor-pointer"
-                             (click)="navigateToPoll(poll)">
+                              (click)="navigateToPoll(poll)">
                             <div class="flex justify-between items-start mb-3">
                                 <h4 class="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg leading-tight">
                                     {{ poll.title }}

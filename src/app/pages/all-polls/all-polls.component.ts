@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PollService, PollData } from '../../services/poll.service';
 import { Subscription } from 'rxjs';
+import { start } from 'repl';
 
 @Component({
   selector: 'app-all-polls',
@@ -17,7 +18,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   loading = false;
   error: string | null = null;
 
-  selectedFilter: 'all' | 'active' | 'closed' = 'all';
+  selectedFilter: 'all' | 'active' | 'closed' | 'pending' = 'all';
   selectedSort: 'newest' | 'oldest' | 'popular' | 'alphabetical' = 'newest';
   searchTerm = '';
 
@@ -26,7 +27,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   constructor(
     private pollService: PollService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadAllPublicPolls();
@@ -57,7 +58,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
     this.subscriptions.push(pollsSub);
   }
 
-  onFilterChange(filter: 'all' | 'active' | 'closed') {
+  onFilterChange(filter: 'all' | 'active' | 'closed' | 'pending') {
     this.selectedFilter = filter;
     this.applyFiltersAndSort();
   }
@@ -78,6 +79,9 @@ export class AllPollsComponent implements OnInit, OnDestroy {
 
     if (this.selectedFilter === 'active') {
       polls = polls.filter(poll => poll.isActive);
+    }
+    if (this.selectedFilter === 'pending') {
+      polls = polls.filter(poll => poll.startTime > new Date());
     } else if (this.selectedFilter === 'closed') {
       polls = polls.filter(poll => !poll.isActive);
     }
@@ -140,11 +144,23 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   }
 
   getStatusColor(poll: PollData): string {
-    return poll.isActive ? 'text-green-400 bg-green-900/30' : 'text-yellow-400 bg-yellow-900/30';
+    if (poll.isActive) {
+      return 'text-green-400 bg-green-900/30';
+    }
+    if (!poll.isActive && poll.startTime > new Date()) {
+      return 'text-yellow-400 bg-yellow-900/30';
+    }
+    return 'text-red-400 bg-red-900/30';
   }
 
   getStatusText(poll: PollData): string {
-    return poll.isActive ? 'Active' : 'Closed';
+    if (poll.isActive) {
+      return 'Active';
+    }
+    if (!poll.isActive && poll.startTime > new Date()) {
+      return 'Pending';
+    }
+    return 'Closed';
   }
 
   getProgressPercentage(poll: PollData): number {
