@@ -249,14 +249,11 @@ export class PollService {
     const userEmail = this.getCurrentUserEmail();
     const isAuthenticated = !!userEmail;
 
-    console.log('[submitVote] Called with:', { pollId, answerIndex, userEmail });
-
     const pollRef = doc(this.firestore, `polls/${pollId}`) as DocumentReference<DocumentData>;
 
     return from(getDoc(pollRef)).pipe(
       switchMap(docSnap => {
         if (!docSnap.exists()) {
-          console.warn('[submitVote] Poll not found in Firestore.');
           return of(false);
         }
 
@@ -273,7 +270,6 @@ export class PollService {
         // anonymous user voting
         if (!userEmail) {
           if (!isPublic) {
-            console.warn('[submitVote] Anonymous user trying to vote on non-public poll — denied.');
             return of(false);
           }
 
@@ -283,7 +279,6 @@ export class PollService {
           return from(updateDoc(pollRef, { results })).pipe(
             map(() => true),
             catchError(error => {
-              console.error(`[submitVote] Error updating anonymous vote for poll ${pollId}:`, error);
               return of(false);
             })
           );
@@ -304,39 +299,30 @@ export class PollService {
           isAdmin
         );
 
-        console.log('[submitVote] canVote check:', canVote);
-
         if (!canVote) {
-          console.warn('[submitVote] User is not allowed to vote:', userEmail);
           return of(false);
         }
 
         if (answerIndex < 0 || answerIndex >= results.length) {
-          console.error('[submitVote] Invalid answer index:', answerIndex);
           return of(false);
         }
 
         results[answerIndex] = (parseInt(results[answerIndex] || '0') + 1).toString();
-
-        console.log('[submitVote] Submitting vote. Updated results:', results);
 
         return from(updateDoc(pollRef, {
           results: results,
           voted: arrayUnion(userEmail)
         })).pipe(
           map(() => {
-            console.log('[submitVote] Vote recorded successfully for', userEmail);
             return true;
           }),
           catchError(error => {
-            console.error('[submitVote] Firestore update failed:', error);
             return of(false);
           })
         );
       }),
 
       catchError(error => {
-        console.error('[submitVote] Firestore read failed:', error);
         return of(false);
       })
     );
@@ -403,10 +389,8 @@ export class PollService {
 
     if (!isAuthenticated) return false;
 
-    // Private poll: any authenticated user can see
     if (!poll.voters || poll.voters.length === 0) return true;
 
-    // Members-only: only if email is explicitly listed
     return !!email && poll.voters.includes(email);
   }
 

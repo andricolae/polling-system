@@ -118,25 +118,21 @@ export class PollCreateComponent implements OnInit {
         if (!alreadySelected.selected) {
           alreadySelected.selected = true;
           addedCount++;
-          console.log(' Re-selected already existing user:', email);
         } else {
           alreadySelectedCount++;
         }
       } else if (userExists) {
         this.selectedUsers.push({ ...userExists, selected: true });
         addedCount++;
-        console.log('Added registered user:', email);
       } else {
-        // Create a new "virtual" user (unregistered)
         const newUser: User = {
-          uid: '', // no uid for unregistered
+          uid: '', 
           email,
           role: 'user',
           selected: true
         };
         this.selectedUsers.push(newUser);
         addedCount++;
-        console.log(' Added unregistered user:', email);
       }
     });
 
@@ -145,7 +141,7 @@ export class PollCreateComponent implements OnInit {
     }
 
     if (addedCount > 0) {
-      this.emailValidationMessages.push(`✓ Successfully added ${addedCount} user(s)`);
+      this.emailValidationMessages.push(`Successfully added ${addedCount} user(s)`);
     }
 
     if (alreadySelectedCount > 0) {
@@ -177,15 +173,11 @@ export class PollCreateComponent implements OnInit {
 
 
   createPoll() {
-    console.log('createPoll method called');
-
     if (!this.validateForm()) {
       return;
     }
 
     this.loading = true;
-    console.log('Form validated, creating poll...');
-
     let selectedVoters: string[] = [];
 
     if (!this.isPublic) {
@@ -199,7 +191,6 @@ export class PollCreateComponent implements OnInit {
         .filter(email => email && !emailsFromSelectedUsers.includes(email));
 
       selectedVoters = [...emailsFromSelectedUsers, ...emailsFromManualEntry];
-      console.log('[createPoll] Final voters:', selectedVoters);
     }
 
     const newPoll = {
@@ -216,13 +207,10 @@ export class PollCreateComponent implements OnInit {
       voters: this.isPublic ? [] : selectedVoters
     };
 
-    console.log('Poll data to be saved:', newPoll);
-
     this.pollService.createPoll(newPoll).subscribe({
       next: (pollId) => {
         this.loading = false;
         this.successMessage = 'Poll created successfully!';
-        console.log('Poll created with ID:', pollId);
 
         setTimeout(() => {
           this.router.navigate(['/vote']);
@@ -230,7 +218,6 @@ export class PollCreateComponent implements OnInit {
       },
       error: (error) => {
         this.loading = false;
-        console.error('Error creating poll:', error);
         this.errorMessage = 'Failed to create poll. Please try again.';
       }
     });
