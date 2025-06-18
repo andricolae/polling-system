@@ -59,7 +59,7 @@ export class PollCreateComponent implements OnInit {
   toggleAll() {
     if (this.selectAll) {
       this.users.forEach(user => {
-        const existingUser = this.selectedUsers.find(selected => selected.uid === user.uid);
+        const existingUser = this.selectedUsers.find(selected => selected.email === user.email);
         if (!existingUser) {
           this.selectedUsers.push({ ...user, selected: true });
         } else {
@@ -95,12 +95,10 @@ export class PollCreateComponent implements OnInit {
     this.emailErrorMessage = null;
     this.emailValidationMessages = [];
 
-    if (!this.newUserEmail.trim()) {
-      return;
-    }
+    if (!this.newUserEmail.trim()) return;
 
     const emailList = this.newUserEmail.split(',')
-      .map(email => email.trim())
+      .map(email => email.trim().toLowerCase())
       .filter(email => email !== '');
 
     let addedCount = 0;
@@ -109,28 +107,36 @@ export class PollCreateComponent implements OnInit {
 
     emailList.forEach(email => {
       const userExists = this.users.find(user =>
-        user.email.toLowerCase() === email.toLowerCase()
+        user.email.toLowerCase() === email
       );
 
-      if (!userExists) {
-        invalidEmails.push(email);
-        return;
-      }
-
       const alreadySelected = this.selectedUsers.find(user =>
-        user.email.toLowerCase() === email.toLowerCase()
+        user.email.toLowerCase() === email
       );
 
       if (alreadySelected) {
         if (!alreadySelected.selected) {
           alreadySelected.selected = true;
           addedCount++;
+          console.log(' Re-selected already existing user:', email);
         } else {
           alreadySelectedCount++;
         }
-      } else {
+      } else if (userExists) {
         this.selectedUsers.push({ ...userExists, selected: true });
         addedCount++;
+        console.log('Added registered user:', email);
+      } else {
+        // Create a new "virtual" user (unregistered)
+        const newUser: User = {
+          uid: '', // no uid for unregistered
+          email,
+          role: 'user',
+          selected: true
+        };
+        this.selectedUsers.push(newUser);
+        addedCount++;
+        console.log(' Added unregistered user:', email);
       }
     });
 
@@ -147,13 +153,13 @@ export class PollCreateComponent implements OnInit {
     }
 
     this.newUserEmail = '';
-
     this.updateSelectAllState();
 
     setTimeout(() => {
       this.emailValidationMessages = [];
     }, 5000);
   }
+
 
   updateSelectAllState() {
     this.selectAll = this.users.length > 0 &&
@@ -169,6 +175,7 @@ export class PollCreateComponent implements OnInit {
     this.updateSelectAllState();
   }
 
+
   createPoll() {
     console.log('createPoll method called');
 
@@ -182,9 +189,17 @@ export class PollCreateComponent implements OnInit {
     let selectedVoters: string[] = [];
 
     if (!this.isPublic) {
-      selectedVoters = this.selectedUsers
-        .filter(user => user.selected)
-        .map(user => user.email);
+      const emailsFromSelectedUsers = this.selectedUsers
+        .map(user => user.email?.toLowerCase())
+        .filter(email => !!email);
+
+      const emailsFromManualEntry = this.newUserEmail
+        .split(',')
+        .map(e => e.trim().toLowerCase())
+        .filter(email => email && !emailsFromSelectedUsers.includes(email));
+
+      selectedVoters = [...emailsFromSelectedUsers, ...emailsFromManualEntry];
+      console.log('[createPoll] Final voters:', selectedVoters);
     }
 
     const newPoll = {
