@@ -15,7 +15,8 @@ import {
   DocumentReference,
   arrayUnion,
   orderBy,
-  limit
+  limit,
+  collectionData
 } from '@angular/fire/firestore';
 import { Observable, from, map, catchError, of, switchMap } from 'rxjs';
 import { Auth } from '@angular/fire/auth';
@@ -166,6 +167,11 @@ export class PollService {
       })
     );
   }
+
+  getAllPolls(): Observable<PollData[]> {
+  const pollsRef = collection(this.firestore, 'polls');
+  return collectionData(pollsRef, { idField: 'id' }) as Observable<PollData[]>;
+}
 
   getLatestPublicPolls(limitCount: number = 3): Observable<PollData[]> {
     const pollsRef = collection(this.firestore, 'polls');
@@ -419,5 +425,10 @@ export class PollService {
 
     return isListed;
   }
+
+  updatePoll(pollId: string, updatedData: Partial<PollData>) {
+  const pollDoc = doc(this.firestore, 'polls', pollId);
+  return from(updateDoc(pollDoc, updatedData));
+}
 
 }
