@@ -98,9 +98,10 @@ export class SinglePollComponent implements OnInit {
     return isInactive ||
       (this.selectedPoll.realtime && this.hasVoted) ||
       (!this.selectedPoll.realtime && (isExpired || allVoted));
-  // showResults(): boolean {
-  //   // return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
-  // }
+    // showResults(): boolean {
+    //   // return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
+    // }
+  }
 
   isDeadlineReached(): boolean {
     return !!this.selectedPoll && new Date() >= new Date(this.selectedPoll.deadline);
@@ -118,5 +119,5 @@ export class SinglePollComponent implements OnInit {
   parseInt(value: string): number {
     return parseInt(value) || 0;
   }
-  
+
 }
