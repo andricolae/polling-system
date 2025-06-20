@@ -2,7 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PollService, PollData } from '../../services/poll.service';
-import { Subscription, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
+
+import { Subscription } from 'rxjs';
+import { start } from 'repl';
+import { Store } from '@ngrx/store';
+import { selectAuthUser } from '../../auth/auth.selectors';
 
 @Component({
   selector: 'app-all-polls',
@@ -23,16 +28,28 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   selectedSort: 'newest' | 'oldest' | 'popular' | 'alphabetical' = 'newest';
   searchTerm = '';
 
+  isAdmin = false;
+
   private subscriptions: Subscription[] = [];
 
   constructor(
     private pollService: PollService,
-    private router: Router
+    private router: Router,
+    private store: Store
   ) { }
 
   ngOnInit() {
+
     this.loadAllPolls();
     this.onFilterChange('active');
+
+    this.store.select(selectAuthUser).subscribe(user => {
+      this.isAdmin = user?.role === 'admin';
+    });
+
+    this.loadAllPublicPolls();
+    this.onFilterChange('active')
+
   }
 
   ngOnDestroy() {
@@ -209,4 +226,16 @@ export class AllPollsComponent implements OnInit, OnDestroy {
     const maxVotes = Math.max(totalVotes, poll.voters.length || 1);
     return Math.min(100, (totalVotes / maxVotes) * 100);
   }
+
+  onDeletePoll(event: Event, pollId: string) {
+    event.stopPropagation();
+
+    this.pollService.deletePoll(pollId).then(() => {
+      this.filteredPolls = this.filteredPolls.filter(p => p.id !== pollId);
+      this.allPublicPolls = this.allPublicPolls.filter(p => p.id !== pollId);
+    }).catch((error) => {
+      console.error('Error deleting poll:', error);
+    });
+  }
+
 }
