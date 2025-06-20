@@ -88,7 +88,16 @@ export class SinglePollComponent implements OnInit {
     return !!this.selectedPoll && new Date() > new Date(this.selectedPoll.deadline);
   }
 
-  showResults(): boolean {
-    return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
+  // showResults(): boolean {
+  //   // return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
+  // }
+
+  isDeadlineReached(): boolean {
+    return !!this.selectedPoll && new Date() >= new Date(this.selectedPoll.deadline);
   }
+
+  goBackToList(): void {
+    this.router.navigate(['/all-polls']);
+  }
+  
 }
