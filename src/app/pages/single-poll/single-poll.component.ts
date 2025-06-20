@@ -18,6 +18,8 @@ export class SinglePollComponent implements OnInit {
   hasVoted: boolean = false;
   loading: boolean = true;
   errorMessage: string = '';
+  alreadyVotedMessage: string = '';
+
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +38,13 @@ export class SinglePollComponent implements OnInit {
             return;
           }
           this.selectedPoll = poll;
-          this.hasVoted = !!poll?.voted?.includes(this.pollService.getCurrentUserId() || '');
+          const userEmail = this.pollService.getCurrentUserEmail();
+          this.hasVoted = !!poll?.voted?.includes(userEmail || '');
+
+          if (this.hasVoted) {
+            this.alreadyVotedMessage = 'You have already voted on this poll.';
+          }
+
           this.loading = false;
         },
         error: (error) => {
@@ -50,6 +58,7 @@ export class SinglePollComponent implements OnInit {
       this.loading = false;
     }
   }
+
 
   submitVote(): void {
     if (!this.selectedPoll?.id || !this.selectedAnswer) return;
@@ -89,6 +98,12 @@ export class SinglePollComponent implements OnInit {
     return isInactive ||
       (this.selectedPoll.realtime && this.hasVoted) ||
       (!this.selectedPoll.realtime && (isExpired || allVoted));
+  // showResults(): boolean {
+  //   // return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
+  // }
+
+  isDeadlineReached(): boolean {
+    return !!this.selectedPoll && new Date() >= new Date(this.selectedPoll.deadline);
   }
 
   goBackToList(): void {
@@ -103,4 +118,5 @@ export class SinglePollComponent implements OnInit {
   parseInt(value: string): number {
     return parseInt(value) || 0;
   }
+  
 }

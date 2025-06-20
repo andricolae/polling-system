@@ -37,10 +37,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadPublicPolls() {
     this.loading = true;
+    const email = this.pollService.getCurrentUserEmail();
+    const isAuth = true;
 
     const latestSub = this.pollService.getLatestPublicPolls(3).subscribe({
       next: (polls) => {
-        this.latestPublicPolls = polls;
+        // this.latestPublicPolls = polls;
+        this.latestPublicPolls = polls.filter(p =>
+          this.pollService.canUserViewPoll(p, email, isAuth)
+        );
         this.loading = false;
       },
       error: (error) => {
@@ -51,7 +56,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     const popularSub = this.pollService.getMostPopularPublicPolls(3).subscribe({
       next: (polls) => {
-        this.popularPublicPolls = polls;
+        // this.popularPublicPolls = polls;
+        this.popularPublicPolls = polls.filter(p =>
+          this.pollService.canUserViewPoll(p, email, isAuth)
+        );
       },
       error: (error) => {
         console.error('Error loading popular public polls:', error);

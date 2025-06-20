@@ -26,6 +26,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   successMessage: string | null = null;
 
   currentUserId: string | null = null;
+  currentUserEmail: string | null = null;
   isAdmin: boolean = false;
   private subscriptions: Subscription[] = [];
 
@@ -39,6 +40,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     console.log('Vote component initializing...');
 
     this.currentUserId = this.pollService.getCurrentUserId();
+    this.currentUserEmail = this.pollService.getCurrentUserEmail();
+
     console.log('Current user ID from service:', this.currentUserId);
 
     const savedUser = localStorage.getItem('user');
@@ -79,14 +82,15 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     if (!poll) {
       poll = this.pastPolls.find(p => p.id === pollId);
     }
+    const isAuthenticated = !!this.currentUserId;
 
-    if (poll) {
-      console.log('Found poll to open:', poll);
-      this.openPoll(poll);
-    } else {
-      console.warn('Poll not found with ID:', pollId);
-      this.router.navigate(['/404']);
-    }
+    this.pollService.getPollById(pollId).subscribe(poll => {
+      if (poll && this.pollService.canUserViewPoll(poll, this.currentUserEmail, isAuthenticated)) {
+        this.openPoll(poll);
+      } else {
+        this.router.navigate(['/404']);
+      }
+    });
   }
 
   navigateTo(path: string) {
@@ -100,11 +104,9 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     const activePollsSub = this.pollService.getActivePolls().subscribe({
       next: (polls) => {
         this.ongoingPolls = this.isAdmin ? polls : this.filterPollsForCurrentUser(polls);
-        console.log('Active polls loaded:', this.ongoingPolls.length);
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading active polls:', error);
         this.errorMessage = 'Could not load active polls';
         this.loading = false;
       }
@@ -113,10 +115,8 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     const pastPollsSub = this.pollService.getPastPolls().subscribe({
       next: (polls) => {
         this.pastPolls = this.isAdmin ? polls : this.filterPollsForCurrentUser(polls);
-        console.log('Past polls loaded:', this.pastPolls.length);
       },
       error: (error) => {
-        console.error('Error loading past polls:', error);
         this.errorMessage = 'Could not load past polls';
       }
     });
@@ -126,14 +126,14 @@ export class PollVoteComponent implements OnInit, OnDestroy {
 
   private filterPollsForCurrentUser(polls: PollData[]): PollData[] {
     if (!this.currentUserId) {
-      console.warn('No current user ID available. Unable to filter polls.');
       return [];
     }
 
+    const isAuthenticated = !!this.currentUserId;
     const now = new Date();
 
     return polls.filter(poll =>
-      poll.voters?.includes(this.currentUserId!) &&
+      this.pollService.canUserViewPoll(poll, this.currentUserEmail, isAuthenticated) &&
       poll.startTime <= now
     );
   }
@@ -145,7 +145,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
     this.successMessage = null;
 
     if (poll.isActive) {
-      this.hasVoted = this.isAdmin || !!(this.currentUserId && poll.voted && poll.voted.includes(this.currentUserId));
+      this.hasVoted = !!(this.currentUserEmail && poll.voted.includes(this.currentUserEmail));
     } else {
       this.hasVoted = true;
     }
@@ -164,9 +164,13 @@ export class PollVoteComponent implements OnInit, OnDestroy {
   }
 
   submitVote() {
-    if (this.isAdmin) return;
 
-    if (!this.selectedPoll || !this.selectedAnswer) {
+    if (!this.selectedPoll) {
+      this.errorMessage = 'Please select a poll';
+      return;
+    }
+
+    if (!this.selectedAnswer) {
       this.errorMessage = 'Please select an answer';
       return;
     }
@@ -176,45 +180,51 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.selectedPoll.voters.includes(this.currentUserId!)) {
+    const isAuthenticated = this.currentUserEmail !== undefined && this.currentUserEmail !== null && this.currentUserEmail !== '';
+    const canVote = this.pollService.canUserVoteOnPoll(this.selectedPoll, this.currentUserEmail, isAuthenticated);
+
+    if (!canVote) {
       this.errorMessage = 'You are not authorized to vote on this poll';
       return;
     }
 
     const answerIndex = this.selectedPoll.answers.indexOf(this.selectedAnswer);
+
     if (answerIndex === -1) {
-      console.error('Selected answer not found in poll options');
       this.errorMessage = 'Invalid selection';
+      return;
+    }
+
+    if (!this.hasPollStarted(this.selectedPoll)) {
+      this.errorMessage = 'This poll has not started yet.';
+      return;
+    }
+
+    const pollId = this.selectedPoll.id;
+
+    if (!pollId) {
+      this.errorMessage = 'Invalid poll';
       return;
     }
 
     this.loading = true;
     this.errorMessage = null;
 
-    const pollId = this.selectedPoll.id;
-    if (!pollId) {
-      console.error('Poll ID is missing');
-      this.errorMessage = 'Invalid poll';
-      this.loading = false;
-      return;
-    }
-    if (!this.hasPollStarted(this.selectedPoll)) {
-      this.errorMessage = 'This poll has not started yet,';
-      return;
-    }
 
     const voteSub = this.pollService.submitVote(pollId, answerIndex).subscribe({
       next: (success) => {
         this.loading = false;
 
         if (success) {
+          const currentUserEmail = this.pollService.getCurrentUserEmail();
+
           if (this.selectedPoll) {
             const updatedResults = [...this.selectedPoll.results];
             updatedResults[answerIndex] = (parseInt(updatedResults[answerIndex]) + 1).toString();
             this.selectedPoll.results = updatedResults;
 
-            if (this.currentUserId && !this.selectedPoll.voted.includes(this.currentUserId)) {
-              this.selectedPoll.voted.push(this.currentUserId);
+            if (currentUserEmail && !this.selectedPoll.voted.includes(currentUserEmail)) {
+              this.selectedPoll.voted.push(currentUserEmail);
             }
           }
 
@@ -222,6 +232,7 @@ export class PollVoteComponent implements OnInit, OnDestroy {
           this.successMessage = 'Your vote has been recorded!';
 
           setTimeout(() => {
+            console.log('[submitVote] Reloading polls...');
             this.loadPolls();
           }, 2000);
         } else {
@@ -230,16 +241,14 @@ export class PollVoteComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loading = false;
-        console.error('Error submitting vote:', error);
         this.errorMessage = 'Failed to submit vote. Please try again.';
       }
-
-
-
     });
 
     this.subscriptions.push(voteSub);
   }
+
+
 
   totalVotes(): number {
     return this.selectedPoll?.results.map(r => +r).reduce((a, b) => a + b, 0) || 0;
