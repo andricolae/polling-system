@@ -47,7 +47,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
       this.isAdmin = user?.role === 'admin';
     });
 
-    this.loadAllPublicPolls();
+    // this.loadAllPublicPolls();
     this.onFilterChange('active')
 
   }
