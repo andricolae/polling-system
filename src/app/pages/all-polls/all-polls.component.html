@@ -4,7 +4,7 @@
         <div class="text-center mb-12">
 
             <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 mb-4">
-                All Public Polls
+                All Polls
             </h1>
             <p class="text-xl text-gray-300 max-w-3xl mx-auto">
                 Discover and participate in polls from the community. Share your voice and see what others think.
@@ -39,7 +39,7 @@
                         Active
                     </button>
                     <button (click)="onFilterChange('pending')"
-                            [class]="selectedFilter === 'pending' ? 'bg-orange-400 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'"
+                            [class]="selectedFilter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'"
                             class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Pending
                     </button>
@@ -78,7 +78,7 @@
                 </svg>
                 <h3 class="text-xl font-bold text-red-400 mb-2">Oops! Something went wrong</h3>
                 <p class="text-gray-300 mb-4">{{ error }}</p>
-                <button (click)="loadAllPublicPolls()"
+                <button (click)="loadAllPolls()"
                         class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
                     Try Again
                 </button>
@@ -89,7 +89,7 @@
         @if (!loading && !error) {
         <div class="flex items-center justify-between mb-6">
             <div class="text-gray-400">
-                Showing {{ filteredPolls.length }} of {{ allPublicPolls.length }} polls
+                Showing {{ filteredPolls.length }} of {{ allPolls.length }} polls
             </div>
         </div>
         }
@@ -160,7 +160,7 @@
                     <span>No {{ selectedFilter }} polls available.</span>
                     }
                     @if (!searchTerm && selectedFilter === 'all') {
-                    <span>There are no public polls available yet.</span>
+                    <span>There are no polls available yet.</span>
                     }
                 </p>
                 <div class="space-y-3">
