@@ -24,19 +24,22 @@
       <!-- Status Messages -->
       <div class="space-y-3">
         <!-- Not started -->
-        <div *ngIf="selectedPoll.isActive && !hasPollStarted()" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && !hasPollStarted()"
+          class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           This poll hasn't started yet. Please check back after
           <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
         </div>
 
         <!-- Already voted, realtime false -->
-        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime"
+          class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           You already voted. Results will be available on:
           <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
         </div>
 
         <!-- Already voted, realtime true -->
-        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && selectedPoll.realtime" class="bg-cyan-900 text-cyan-300 p-4 rounded text-center">
+        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && selectedPoll.realtime"
+          class="bg-cyan-900 text-cyan-300 p-4 rounded text-center">
           You already voted, here are the results.
         </div>
 
@@ -51,15 +54,14 @@
         <h3 class="text-lg font-semibold text-cyan-300">Choose an answer:</h3>
         <form class="space-y-3">
           <label *ngFor="let answer of selectedPoll.answers"
-                 class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600">
+            class="block bg-gray-700 p-3 rounded cursor-pointer hover:bg-gray-600">
             <input type="radio" [value]="answer" name="answer" class="mr-2 accent-cyan-500"
-                   [(ngModel)]="selectedAnswer" />
+              [(ngModel)]="selectedAnswer" />
             {{ answer }}
           </label>
         </form>
-        <button (click)="submitVote()"
-                [disabled]="!selectedAnswer || loading"
-                class="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-6 rounded shadow transition">
+        <button (click)="submitVote()" [disabled]="!selectedAnswer || loading"
+          class="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-6 rounded shadow transition">
           Submit Vote
         </button>
       </div>
@@ -74,13 +76,21 @@
             <span>{{ selectedPoll.results[i] || '0' }} votes</span>
           </div>
           <div class="w-full bg-gray-700 h-3 rounded overflow-hidden">
-            <!-- <div class="bg-cyan-500 h-full transition-all duration-300"
+            <div class="bg-cyan-500 h-full transition-all duration-300"
                  [style.width.%]="(totalVotes() > 0) ? (parseInt(selectedPoll.results[i]) / totalVotes() * 100) : 0">
-            </div> -->
+            </div>
           </div>
         </div>
 
         <p class="text-sm text-gray-300 mt-2">Total votes: {{ totalVotes() }}</p>
+      </div>
+
+      <!-- Back Button -->
+      <div class="mb-4">
+        <button (click)="goBackToList()"
+          class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded shadow transition">
+          ← Back to All Polls
+        </button>
       </div>
 
     </div>
