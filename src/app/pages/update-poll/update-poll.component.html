@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <form #f="ngForm" (ngSubmit)="save(f)">
+        <form *ngIf="poll" #f="ngForm" (ngSubmit)="save(f)">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
 
                 <div class="lg:col-span-1 space-y-8 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
@@ -150,19 +150,19 @@
                             </div>
                         </label>
                     </div>
-                    
+
                     <!-- members-only list -->
                     <div *ngIf="visibility === 'membersOnly'" class="space-y-4">
                         <label class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg hover:bg-cyan-500/20">
-                            <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleAll()"
+                            <input type="checkbox" name="selectAll" [(ngModel)]="selectAll" (change)="toggleAll()"
                                 class="accent-cyan-500" />
                             <span class="text-sm font-medium">Select All Users</span>
                         </label>
                         <div class="max-h-48 overflow-y-auto space-y-2 pr-2">
                             <label *ngFor="let user of users"
                                 class="flex items-center gap-3 p-2 rounded hover:bg-gray-700/30">
-                                <input type="checkbox" [(ngModel)]="user.selected" (change)="onUserChange()"
-                                    class="accent-cyan-500" />
+                                <input type="checkbox" [(ngModel)]="user.selected" name="user_{{ user.email }}"
+                                    (change)="onUserChange()" class="accent-cyan-500" />
                                 <span>{{ user.email }}</span>
                             </label>
                         </div>

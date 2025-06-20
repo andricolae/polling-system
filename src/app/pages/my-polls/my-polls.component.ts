@@ -37,18 +37,11 @@ export class MyPollsComponent implements OnInit {
             deadline: this.ensureDate(p.deadline)
           }));
 
-        console.log('📋 All my polls:', this.polls);
-        console.log('🕐 Current time:', now.toISOString());
-        console.log('🟦 Pending:', this.pendingPolls);
-        console.log('🟩 Active:', this.activePolls);
-        console.log('🟥 Closed:', this.closedPolls);
-
         this.loading = false;
       },
       error: (err) => {
         this.loading = false;
         this.errorMessage = 'Failed to load your polls.';
-        console.error('Error fetching my polls:', err);
       }
     });
   }
