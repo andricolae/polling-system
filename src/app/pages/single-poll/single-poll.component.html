@@ -24,7 +24,7 @@
       <!-- Status Messages -->
       <div class="space-y-3">
         <!-- Not started -->
-        <div *ngIf="selectedPoll.isActive && !hasPollStarted()"
+        <div *ngIf="!selectedPoll.isActive && !hasPollStarted()"
           class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           This poll hasn't started yet. Please check back after
           <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
