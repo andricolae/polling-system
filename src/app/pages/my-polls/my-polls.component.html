@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 p-6 pt-24 text-white">
+  <h2 _ngcontent-ng-c731339708="" class="text-3xl font-bold mb-4 text-cyan-400">Polls you have created</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- Pending Polls -->
+    <div>
+      <h3 class="text-xl font-semibold text-blue-400 mb-4">Pending</h3>
+      <div *ngIf="pendingPolls.length === 0" class="text-sm text-gray-400">No pending polls</div>
+      <div *ngFor="let poll of pendingPolls" class="bg-gray-800 p-4 rounded-xl border border-blue-900/30 mb-6">
+        <h4 class="text-lg font-bold text-white">{{ poll.title }}</h4>
+        <p class="text-sm text-gray-400 mb-2">{{ poll.question }}</p>
+        <p class="text-xs text-blue-300">Starts: {{ poll.startTime | date:'short' }}</p>
+
+        <div class="flex items-center gap-4 mt-2">
+          <a [routerLink]="['/edit', poll.id]" class="text-cyan-400 text-sm underline">Edit</a>
+          <button *ngIf="poll.id" (click)="deletePoll(poll.id)"
+            class="text-red-400 text-sm underline hover:text-red-300 transition">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Active Polls -->
+    <div>
+      <h3 class="text-xl font-semibold text-green-400 mb-4">Active</h3>
+      <div *ngIf="activePolls.length === 0" class="text-sm text-gray-400">No active polls</div>
+      <div *ngFor="let poll of activePolls" class="bg-gray-800 p-4 rounded-xl border border-green-900/30 mb-6">
+        <h4 class="text-lg font-bold text-white">{{ poll.title }}</h4>
+        <p class="text-sm text-gray-400 mb-2">{{ poll.question }}</p>
+        <p class="text-xs text-green-300">Ends: {{ poll.deadline | date:'short' }}</p>
+        <a [routerLink]="['/vote', poll.id]" class="text-cyan-400 text-sm underline">View</a>
+      </div>
+    </div>
+
+    <!-- Closed Polls -->
+    <div>
+      <h3 class="text-xl font-semibold text-red-400 mb-4">Closed</h3>
+      <div *ngIf="closedPolls.length === 0" class="text-sm text-gray-400">No closed polls</div>
+      <div *ngFor="let poll of closedPolls" class="bg-gray-800 p-4 rounded-xl border border-red-900/30 mb-6">
+        <h4 class="text-lg font-bold text-white">{{ poll.title }}</h4>
+        <p class="text-sm text-gray-400 mb-2">{{ poll.question }}</p>
+        <p class="text-xs text-red-300">Ended: {{ poll.deadline | date:'short' }}</p>
+        <a [routerLink]="['/vote', poll.id]" class="text-cyan-400 text-sm underline">Results</a>
+      </div>
+    </div>
+
+  </div>
+</div>

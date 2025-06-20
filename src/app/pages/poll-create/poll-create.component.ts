@@ -33,6 +33,8 @@ export class PollCreateComponent implements OnInit {
   emailValidationMessages: string[] = [];
 
   isPublic: boolean = false;
+  visibility: 'public' | 'private' | 'membersOnly' = 'public';
+
 
   constructor(
     private pollService: PollService,
@@ -126,7 +128,7 @@ export class PollCreateComponent implements OnInit {
         addedCount++;
       } else {
         const newUser: User = {
-          uid: '', 
+          uid: '',
           email,
           role: 'user',
           selected: true
@@ -173,24 +175,19 @@ export class PollCreateComponent implements OnInit {
 
 
   createPoll() {
-    if (!this.validateForm()) {
-      return;
-    }
+    if (!this.validateForm()) return;
 
     this.loading = true;
     let selectedVoters: string[] = [];
 
-    if (!this.isPublic) {
-      const emailsFromSelectedUsers = this.selectedUsers
+    const isPublic = this.visibility === 'public';
+    const isMembersOnly = this.visibility === 'membersOnly';
+
+    if (isMembersOnly) {
+      selectedVoters = this.selectedUsers
+        .filter(u => u.selected)
         .map(user => user.email?.toLowerCase())
         .filter(email => !!email);
-
-      const emailsFromManualEntry = this.newUserEmail
-        .split(',')
-        .map(e => e.trim().toLowerCase())
-        .filter(email => email && !emailsFromSelectedUsers.includes(email));
-
-      selectedVoters = [...emailsFromSelectedUsers, ...emailsFromManualEntry];
     }
 
     const newPoll = {
@@ -203,25 +200,23 @@ export class PollCreateComponent implements OnInit {
       createdBy: this.pollService.getCurrentUserId() || '',
       isActive: true,
       realtime: this.resultTiming === 'after',
-      isPublic: this.isPublic,
-      voters: this.isPublic ? [] : selectedVoters
+      isPublic,
+      voters: isPublic || this.visibility === 'private' ? [] : selectedVoters
     };
 
     this.pollService.createPoll(newPoll).subscribe({
-      next: (pollId) => {
+      next: () => {
         this.loading = false;
         this.successMessage = 'Poll created successfully!';
-
-        setTimeout(() => {
-          this.router.navigate(['/vote']);
-        }, 2000);
+        setTimeout(() => this.router.navigate(['/vote']), 2000);
       },
-      error: (error) => {
+      error: () => {
         this.loading = false;
         this.errorMessage = 'Failed to create poll. Please try again.';
       }
     });
   }
+
 
   validateForm(): boolean {
     this.errorMessage = null;
@@ -256,6 +251,14 @@ export class PollCreateComponent implements OnInit {
     if (deadlineDate <= new Date()) {
       this.errorMessage = 'Deadline must be in the future';
       return false;
+    }
+
+    if (this.visibility === 'membersOnly') {
+      const hasSelectedUsers = this.selectedUsers.some(user => user.selected);
+      if (!hasSelectedUsers) {
+        this.errorMessage = 'Please select at least one user for members-only polls.';
+        return false;
+      }
     }
 
     if (!this.isPublic) {

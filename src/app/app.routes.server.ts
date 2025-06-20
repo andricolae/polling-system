@@ -44,5 +44,13 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'poll/:id',
     renderMode: RenderMode.Client
+  },
+  {
+    path: 'edit/:id',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'myPolls',
+    renderMode: RenderMode.Client
   }
 ];

@@ -113,24 +113,38 @@
                     <div class="space-y-3 mb-6">
                         <label
                             class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/30 transition duration-200">
-                            <input type="radio" [(ngModel)]="isPublic" [value]="true" class="accent-cyan-500" />
+                            <input type="radio" name="visibility" [(ngModel)]="visibility" value="public"
+                                class="accent-cyan-500" />
                             <div>
                                 <div class="text-sm font-medium">Public Poll</div>
                                 <div class="text-xs text-gray-400">Anyone can vote (even without logging in)</div>
                             </div>
                         </label>
+
                         <label
                             class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/30 transition duration-200">
-                            <input type="radio" [(ngModel)]="isPublic" [value]="false" class="accent-cyan-500" />
+                            <input type="radio" name="visibility" [(ngModel)]="visibility" value="private"
+                                class="accent-cyan-500" />
                             <div>
                                 <div class="text-sm font-medium">Private Poll</div>
+                                <div class="text-xs text-gray-400">Poll will not be visible to anyone except admin</div>
+                            </div>
+                        </label>
+
+                        <label
+                            class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-700/30 transition duration-200">
+                            <input type="radio" name="visibility" [(ngModel)]="visibility" value="membersOnly"
+                                class="accent-cyan-500" />
+                            <div>
+                                <div class="text-sm font-medium">Members Only Poll</div>
                                 <div class="text-xs text-gray-400">Only selected users can vote</div>
                             </div>
                         </label>
                     </div>
 
+
                     <!-- only show user selection if private -->
-                    <div *ngIf="!isPublic" class="space-y-4">
+                    <div *ngIf="visibility === 'membersOnly'" class="space-y-4">
 
                         <label
                             class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition duration-200">

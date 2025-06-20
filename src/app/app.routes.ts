@@ -54,5 +54,19 @@ export const routes: Routes = [
     path: 'poll/:id',
     loadComponent: () =>
       import('./pages/single-poll/single-poll.component').then(m => m.SinglePollComponent)
+  },
+  {
+    path: 'edit/:id',
+    loadComponent: () =>
+      import('./pages/update-poll/update-poll.component').then(m => m.UpdatePollComponent),
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'myPolls',
+    loadComponent: () =>
+      import('./pages/my-polls/my-polls.component').then(m => m.MyPollsComponent),
+    canActivate: [authGuard]
   }
+
+
 ];
