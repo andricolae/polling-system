@@ -44,7 +44,7 @@ export const routes: Routes = [
     path: 'create',
     loadComponent: () =>
       import('./pages/poll-create/poll-create.component').then(m => m.PollCreateComponent),
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard]
   },
   {
     path: '404',
@@ -59,7 +59,7 @@ export const routes: Routes = [
     path: 'edit/:id',
     loadComponent: () =>
       import('./pages/update-poll/update-poll.component').then(m => m.UpdatePollComponent),
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'myPolls',
