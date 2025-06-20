@@ -14,9 +14,10 @@ export class MyPollsComponent implements OnInit {
   polls: PollData[] = [];
   loading = false;
   errorMessage = '';
+  successMessage = '';
   userId: string | null = null;
 
-  constructor(private pollService: PollService) {}
+  constructor(private pollService: PollService) { }
 
   ngOnInit(): void {
     this.userId = this.pollService.getCurrentUserId();
@@ -28,7 +29,6 @@ export class MyPollsComponent implements OnInit {
     this.loading = true;
     this.pollService.getAllPolls().subscribe({
       next: (polls) => {
-        const now = new Date();
         this.polls = polls
           .filter(p => p.createdBy === this.userId)
           .map(p => ({
@@ -44,6 +44,18 @@ export class MyPollsComponent implements OnInit {
         this.errorMessage = 'Failed to load your polls.';
       }
     });
+  }
+
+  deletePoll(pollId: string) {
+    if (!pollId) return;
+    this.pollService.deletePoll(pollId)
+      .then(() => {
+        console.log('Poll deleted successfully.');
+      })
+      .catch(error => {
+        console.error('Error deleting poll:', error);
+      });
+
   }
 
   private ensureDate(value: any): Date {

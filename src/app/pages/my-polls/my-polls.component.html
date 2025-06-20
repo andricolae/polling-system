@@ -10,9 +10,17 @@
         <h4 class="text-lg font-bold text-white">{{ poll.title }}</h4>
         <p class="text-sm text-gray-400 mb-2">{{ poll.question }}</p>
         <p class="text-xs text-blue-300">Starts: {{ poll.startTime | date:'short' }}</p>
-        <a [routerLink]="['/edit', poll.id]" class="text-cyan-400 text-sm underline">Edit</a>
+
+        <div class="flex items-center gap-4 mt-2">
+          <a [routerLink]="['/edit', poll.id]" class="text-cyan-400 text-sm underline">Edit</a>
+          <button *ngIf="poll.id" (click)="deletePoll(poll.id)"
+            class="text-red-400 text-sm underline hover:text-red-300 transition">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
+
 
     <!-- Active Polls -->
     <div>
