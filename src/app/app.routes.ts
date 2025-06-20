@@ -34,12 +34,12 @@ export const routes: Routes = [
       import('./pages/poll-vote/poll-vote.component').then(m => m.PollVoteComponent),
     canActivate: [authGuard, emailVerifiedGuard]
   },
-  {
-    path: 'vote/:pollId',
-    loadComponent: () =>
-      import('./pages/poll-vote/poll-vote.component').then(m => m.PollVoteComponent),
-    canActivate: [authGuard, emailVerifiedGuard]
-  },
+  // {
+  //   path: 'vote/:pollId',
+  //   loadComponent: () =>
+  //     import('./pages/poll-vote/poll-vote.component').then(m => m.PollVoteComponent),
+  //   canActivate: [authGuard, emailVerifiedGuard]
+  // },
   {
     path: 'create',
     loadComponent: () =>

@@ -248,7 +248,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   navigateToPoll(poll: DisplayPoll) {
     if (poll.id) {
-      this.router.navigate(['/vote', poll.id]);
+      this.router.navigate(['/poll', poll.id]);
     } else {
       this.router.navigate(['/vote']);
     }

@@ -17,10 +17,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'all-polls',
     renderMode: RenderMode.Client
   },
-  {
-    path: 'vote/:pollId',
-    renderMode: RenderMode.Client
-  },
+  // {
+  //   path: 'vote/:pollId',
+  //   renderMode: RenderMode.Client
+  // },
   {
     path: 'vote',
     renderMode: RenderMode.Client

@@ -263,9 +263,9 @@ export class UserDashboardComponent implements OnInit, OnDestroy {
 
   navigateToPoll(poll: UserPoll) {
     if (poll.id) {
-      this.router.navigate(['/vote', poll.id]);
+      this.router.navigate(['/poll', poll.id]);
     } else {
-      this.router.navigate(['/vote']);
+      this.router.navigate(['/all-polls']);
     }
   }
 }
