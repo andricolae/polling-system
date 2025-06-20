@@ -28,10 +28,17 @@
           class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           This poll hasn't started yet. Please check back after
           <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
-        </div>
+        </div> -->
+        <ng-container *ngIf="!selectedPoll.isActive && !hasPollStarted(); else pollEndedBlock">
+          <div class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+            This poll hasn't started yet. Please check back after
+            <strong>{{ selectedPoll.startTime | date:'medium' }}</strong>.
+          </div>
+        </ng-container>
 
         <!-- Already voted, realtime false -->
-        <div *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime"
+        <div
+          *ngIf="selectedPoll.isActive && hasPollStarted() && hasVoted && !selectedPoll.realtime && !isDeadlineReached()"
           class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           You already voted. Results will be available on:
           <strong>{{ selectedPoll.deadline | date:'medium' }}</strong>
@@ -44,13 +51,20 @@
         </div>
 
         <!-- Poll ended -->
-        <div *ngIf="!selectedPoll.isActive" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+        <!-- <div *ngIf="!selectedPoll.isActive" class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
           The poll has ended. Here are the results.
-        </div>
+        </div> -->
+        <ng-template #pollEndedBlock>
+          <div class="bg-yellow-900 text-yellow-300 p-4 rounded text-center">
+            The poll has ended. Here are the results.
+          </div>
+        </ng-template>
+
       </div>
 
+
       <!-- Vote Form -->
-      <div *ngIf="selectedPoll.isActive && hasPollStarted() && !hasVoted">
+      <div *ngIf="selectedPoll.isActive && hasPollStarted() && !hasVoted && !isDeadlineReached()">
         <h3 class="text-lg font-semibold text-cyan-300">Choose an answer:</h3>
         <form class="space-y-3">
           <label *ngFor="let answer of selectedPoll.answers"
@@ -67,7 +81,9 @@
       </div>
 
       <!-- Results -->
-      <div *ngIf="!selectedPoll.isActive || (selectedPoll.realtime && hasVoted)" class="pt-4">
+      <div
+        *ngIf="!selectedPoll.isActive || (selectedPoll.realtime && hasVoted) || (hasVoted && !selectedPoll.realtime && isDeadlineReached())"
+        class="pt-4">
         <h3 class="text-lg font-semibold text-cyan-300 mb-3">Results</h3>
 
         <div *ngFor="let answer of selectedPoll.answers; let i = index" class="mb-4">
@@ -84,8 +100,6 @@
 
         <p class="text-sm text-gray-300 mt-2">Total votes: {{ totalVotes() }}</p>
       </div>
-
-      <!-- Back Button -->
       <div class="mb-4">
         <button (click)="goBackToList()"
           class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded shadow transition">
