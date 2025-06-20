@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PollService, PollData } from '../../services/poll.service';
+import { combineLatest } from 'rxjs';
+
 import { Subscription } from 'rxjs';
 import { start } from 'repl';
 import { Store } from '@ngrx/store';
@@ -16,6 +18,8 @@ import { selectAuthUser } from '../../auth/auth.selectors';
 })
 export class AllPollsComponent implements OnInit, OnDestroy {
   allPublicPolls: PollData[] = [];
+  allPrivatePolls: PollData[] = [];
+  allPolls: PollData[] = [];
   filteredPolls: PollData[] = [];
   loading = false;
   error: string | null = null;
@@ -35,41 +39,66 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+
+    this.loadAllPolls();
+    this.onFilterChange('active');
+
     this.store.select(selectAuthUser).subscribe(user => {
       this.isAdmin = user?.role === 'admin';
     });
 
-    this.loadAllPublicPolls();
+    // this.loadAllPublicPolls();
     this.onFilterChange('active')
+
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  loadAllPublicPolls() {
+  loadAllPolls() {
     this.loading = true;
     this.error = null;
     const email = this.pollService.getCurrentUserEmail();
     const isAuth = !!email;
 
-    const pollsSub = this.pollService.getAllPublicPolls().subscribe({
-      next: (polls) => {
-        // this.allPublicPolls = polls;
-        this.allPublicPolls = polls.filter(p =>
+    // Load both public and private polls
+    const combinedSub = combineLatest([
+      this.pollService.getAllPublicPolls(),
+      this.pollService.getAllPrivatePolls(email) // Pass email to get user-specific private polls
+    ]).subscribe({
+      next: ([publicPolls, privatePolls]) => {
+        // Filter public polls based on user permissions
+        this.allPublicPolls = publicPolls.filter(p =>
           this.pollService.canUserViewPoll(p, email, isAuth)
         );
+
+        // Private polls are already filtered in the service
+        this.allPrivatePolls = privatePolls;
+
+        // Combine all polls and remove duplicates
+        this.combinePolls();
         this.applyFiltersAndSort();
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading all public polls:', error);
+        console.error('Error loading polls:', error);
         this.error = 'Failed to load polls. Please try again.';
         this.loading = false;
       }
     });
 
-    this.subscriptions.push(pollsSub);
+    this.subscriptions.push(combinedSub);
+  }
+
+  private combinePolls() {
+    // Combine public and private polls
+    const combined = [...this.allPublicPolls, ...this.allPrivatePolls];
+
+    // Remove duplicates based on poll ID
+    this.allPolls = combined.filter((poll, index, self) =>
+      index === self.findIndex(p => p.id === poll.id)
+    );
   }
 
   onFilterChange(filter: 'all' | 'active' | 'closed' | 'pending') {
@@ -89,17 +118,27 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   }
 
   applyFiltersAndSort() {
-    let polls = [...this.allPublicPolls];
+    let polls = [...this.allPolls];
+    const now = new Date();
 
-    if (this.selectedFilter === 'active') {
-      polls = polls.filter(poll => poll.isActive);
-    }
-    if (this.selectedFilter === 'pending') {
-      polls = polls.filter(poll => poll.startTime > new Date());
-    } else if (this.selectedFilter === 'closed') {
-      polls = polls.filter(poll => !poll.isActive);
+    // Apply status filter
+    switch (this.selectedFilter) {
+      case 'active':
+        polls = polls.filter(poll => poll.isActive && poll.startTime <= now);
+        break;
+      case 'pending':
+        polls = polls.filter(poll => poll.isActive && poll.startTime > now);
+        break;
+      case 'closed':
+        polls = polls.filter(poll => !poll.isActive);
+        break;
+      case 'all':
+      default:
+        // Show all polls
+        break;
     }
 
+    // Apply search filter
     if (this.searchTerm) {
       polls = polls.filter(poll =>
         poll.title.toLowerCase().includes(this.searchTerm) ||
@@ -108,6 +147,7 @@ export class AllPollsComponent implements OnInit, OnDestroy {
       );
     }
 
+    // Apply sorting
     switch (this.selectedSort) {
       case 'newest':
         polls.sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
@@ -158,20 +198,24 @@ export class AllPollsComponent implements OnInit, OnDestroy {
   }
 
   getStatusColor(poll: PollData): string {
-    if (poll.isActive) {
+    const now = new Date();
+
+    if (poll.isActive && poll.startTime <= now) {
       return 'text-green-400 bg-green-900/30';
     }
-    if (!poll.isActive && poll.startTime > new Date()) {
-      return 'text-yellow-400 bg-yellow-900/30';
+    if (poll.isActive && poll.startTime > now) {
+      return 'text-orange-400 bg-orange-900/30';
     }
-    return 'text-red-400 bg-red-900/30';
+    return 'text-yellow-400 bg-yellow-900/30';
   }
 
   getStatusText(poll: PollData): string {
-    if (poll.isActive) {
+    const now = new Date();
+
+    if (poll.isActive && poll.startTime <= now) {
       return 'Active';
     }
-    if (!poll.isActive && poll.startTime > new Date()) {
+    if (poll.isActive && poll.startTime > now) {
       return 'Pending';
     }
     return 'Closed';

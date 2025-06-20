@@ -437,5 +437,49 @@ export class PollService {
     return deleteDoc(pollRef);
   }
 
+  // Replace the existing getPrivatePolls method in your PollService with these two methods:
 
+getPrivatePolls(): Observable<PollData[]> {
+  // This method gets private polls with empty voters array (for general access)
+  const pollsRef = collection(this.firestore, 'polls');
+  const privateQuery = query(pollsRef, where('isPublic', '==', false));
+
+  return from(getDocs(privateQuery)).pipe(
+    map(snapshot => {
+      const polls = this.processPollSnapshot(snapshot);
+      return polls.filter(poll => !poll.voters || poll.voters.length === 0);
+    }),
+    catchError(error => {
+      console.error('Error fetching private polls:', error);
+      return of([]);
+    })
+  );
+}
+
+getAllPrivatePolls(userEmail: string | null): Observable<PollData[]> {
+  // This method gets ALL private polls that the user can access
+  if (!userEmail) {
+    // If no email, only return private polls with empty voters
+    return this.getPrivatePolls();
+  }
+
+  const pollsRef = collection(this.firestore, 'polls');
+  const privateQuery = query(pollsRef, where('isPublic', '==', false));
+
+  return from(getDocs(privateQuery)).pipe(
+    map(snapshot => {
+      const polls = this.processPollSnapshot(snapshot);
+      return polls.filter(poll => {
+        // Include polls with empty voters OR polls where user's email is in voters array
+        const hasEmptyVoters = !poll.voters || poll.voters.length === 0;
+        const userIsInVoters = poll.voters && poll.voters.includes(userEmail);
+        return hasEmptyVoters || userIsInVoters;
+      });
+    }),
+    catchError(error => {
+      console.error('Error fetching all private polls:', error);
+      return of([]);
+    })
+  );
+}
 }
