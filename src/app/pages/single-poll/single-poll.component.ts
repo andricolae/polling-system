@@ -88,6 +88,16 @@ export class SinglePollComponent implements OnInit {
     return !!this.selectedPoll && new Date() > new Date(this.selectedPoll.deadline);
   }
 
+  showResults(): boolean {
+    if (!this.selectedPoll) return false;
+
+    const isExpired = new Date() >= new Date(this.selectedPoll.deadline);
+    const isInactive = !this.selectedPoll.isActive;
+    const allVoted = this.haveAllVoted();
+
+    return isInactive ||
+      (this.selectedPoll.realtime && this.hasVoted) ||
+      (!this.selectedPoll.realtime && (isExpired || allVoted));
   // showResults(): boolean {
   //   // return !this.selectedPoll?.isActive || this.selectedPoll?.realtime && this.hasVoted;
   // }
@@ -98,6 +108,15 @@ export class SinglePollComponent implements OnInit {
 
   goBackToList(): void {
     this.router.navigate(['/all-polls']);
+  }
+
+  haveAllVoted(): boolean {
+    if (!this.selectedPoll || !this.selectedPoll.voters) return false;
+    return this.selectedPoll.voted.length >= this.selectedPoll.voters.length;
+  }
+
+  parseInt(value: string): number {
+    return parseInt(value) || 0;
   }
   
 }
