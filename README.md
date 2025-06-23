@@ -77,7 +77,7 @@ This project uses Firebase services and requires proper configuration via enviro
 
 ### Install dependencies
 ```bash
-  Install dependencies:
+  npm install
 ```
 
 ### Set up environment variables
@@ -92,9 +92,6 @@ Create a .env file in the root directory of the project with the following struc
   MESS_SEND_ID="your-firebase-messaging-sender-id"
   APP_ID="your-firebase-app-id"
   MEASURE_ID="your-firebase-measurement-id"
-  GOGL_VISION="your-google-vision-api-key"
-  GMNI="your-gemini-api-key"
-  DB_URL="your-firebase-database-url"
 ```
 
 Replace the placeholder values with your project credentials. You can find these values in your Firebase project settings.
@@ -111,7 +108,7 @@ The "start" option in package.json will generate the environment variable script
 ### Start the development server
 
 ```bash
-  ng serve
+  npm start
 ```
 
 > [!NOTE]
